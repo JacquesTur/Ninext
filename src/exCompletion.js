@@ -3,7 +3,33 @@
 //Display a "no items found" message when completion is not possible.
 //Case-insensitive sorting.
 
-var Version = '1.01 beta';
+// Rev 1.02 du 1 avril 2022
+// 1 - the afterLoadModules event is called only once after the code initialization. So, if you leave the closeRecord() function, it will only run once and you can reopen the form afterwards.
+
+// 2 - The auto-completion appears directly when you add a character in the editor (a-z, 0-9 or .). If you want it to appear only on ctrl-space, replace the code 
+// var configLoadModules := {
+//         completion: true,
+//         badges: true,
+//         evalJS: true    };
+// by
+// var configLoadModules := {
+//         completion: {shortKey : 'Ctrl-Space'},
+//         badges: true,
+//         evalJS: true    };
+// cf: https://codemirror.net/doc/manual.html#keymaps to find other possible key combinations.
+
+// 3 - when you select a function in the completion list, the cursor is positioned between the brackets so that you can directly enter the function parameters.
+
+// Rev 1.03 du 3 avril 2022
+// bug fix : 
+// - taking into account of capital letters,
+// - suppression of the automatic completion when there is only one answer in the list.
+// update : 
+// - added Ctrl-Space (or any other key defined in configLoadModules.completion) to display the completion list at any time, 
+// - positioning the cursor after the opening parenthesis for global functions.
+
+
+var Version = '1.03 beta';
 
 var CCodeMirrorStyle = `
     .CodeMirror-hints {
@@ -80,7 +106,6 @@ window.exCodeMirrorHint = (function () {
     // This is the old interface, kept around for now to stay
     // backwards-compatible.
     CodeMirror.showHint = function (cm, getHints, options) {
-        debugger;
         if (!getHints) return cm.showHint(options);
         if (options && options.async) getHints.async = true;
         var newOpts = { hint: getHints };
@@ -154,7 +179,6 @@ window.exCodeMirrorHint = (function () {
 
         pick: function (data, i) {
             var completion = data.list[i], self = this;
-            debugger;
             this.cm.operation(function () {
                 if (completion.hint)
                     completion.hint(self.cm, data, completion);
@@ -663,16 +687,20 @@ window.exCodeMirrorNx = (function () {
                 },
                 hint(cm, data, completion) {
                     if (completion.text) {
-                        debugger;
                         cm.replaceRange(completion.text, completion.from || data.from,
                             completion.to || data.to, 'complete');
-                        if (completion.type == 'nxFunction')
-                            cm.moveH(-1, 'char');
+                        if (['nxFunction', 'globalFunction'].includes(completion.type)) {
+                            debugger;
+                            var pos = completion.text.search(/\(/) + 1 - completion.text.length;
+                            cm.moveH(pos, 'char');
+                        }
                     }
                 }
             }
         }
         var found = [];
+        options.completeSingle = false;
+            
         if (!currentType) {
             nxFunctions.forEach(fn => {
                 if (fn.function.search(RegExp(keywords, 'i')) >= 0) {
@@ -752,9 +780,8 @@ window.exCodeMirrorNx = (function () {
 
 })();
 
-debugger;
 
-var shortKey = (exConfigModules && exConfigModules.completion && exConfigModules.completion.shortKey) ? exConfigModules.completion.shortKey : null;
+var shortKey = (exConfigModules && exConfigModules.completion && exConfigModules.completion.shortKey) ? exConfigModules.completion.shortKey : 'Ctrl-Space';
 if (shortKey) {
     if (!CodeMirror.defaults.extraKeys) CodeMirror.defaults.extraKeys = [];
     CodeMirror.defaults.extraKeys[shortKey] = 'autocomplete';
@@ -767,12 +794,12 @@ if (!CodeMirror.oldFromTextArea) {
     CodeMirror.fromTextArea = (textarea, options) => {
         var cm = CodeMirror.oldFromTextArea(textarea, options);
 
-        if (!shortKey)
-            cm.on("changes", (cm, changeObj) => {
-                if (changeObj[0].text[0].length && /[a-z0-9\.]$/.test(changeObj[0].text[0]) && !cm.state.completionActive)
-                    cm.showHint(null)
 
-            })
+        cm.on("changes", (cm, changeObj) => {
+            if (changeObj[0].origin == '+input' && changeObj[0].text[0].length && /[A-Za-z0-9\.]$/.test(changeObj[0].text[0]) && !cm.state.completionActive)
+                cm.showHint(null)
+
+        })
         return cm;
     }
 }

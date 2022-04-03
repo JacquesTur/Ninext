@@ -80,7 +80,7 @@ window.exEvalJS = (function () {
     return : result of JavaScript fonction.
      
     exemple :eval('exEvalJS', {
-                                javascript: 'return a + b;'',
+                                javascript: 'return a + b;',
                                 arguments : {
                                             a: 10,
                                             b: 20
@@ -155,4 +155,6 @@ window.exEvalJS = (function () {
     }
 })();
 
-exModules.log( `EvalJS version ${Version} loaded`)
+exModules.log(`EvalJS version ${Version} loaded`)
+
+
