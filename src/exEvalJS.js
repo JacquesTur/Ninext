@@ -1,4 +1,7 @@
-var Version = '1.00 beta';
+var Version = '1.01 beta';
+
+// Version 1.01
+// change the name of the callback function from cb to $callback
 
 window.exEvalJS = (function () {
 
@@ -91,7 +94,7 @@ window.exEvalJS = (function () {
     important: for an asynchronous function, call cb('return value') rather than return 'return value'
                             
         exemple : promise.then( (value) => {
-                                            cb(value);
+                                            $callback(value);
                                             } ).then();
     
     */
@@ -101,11 +104,12 @@ window.exEvalJS = (function () {
             var { javascript, arguments } = params;
             var head = `var {${Object.keys(arguments).join(',')}} = args;`;
             var all = head + '\n' + javascript;
-            var fn = Function('args', 'cb', all,);
+            var fn = Function('args', '$callback', all,);
+            debugger;
             try {
                 var Result = fn(arguments, cb);
                 //check if function use CallBack to return result asynchronously
-                if (javascript.search(/\b(cb)\b/) < 0)
+                if (javascript.search(/[\$]\b(callback)\b/) < 0)
                     return cb(Result);
             } catch (err) {
                 var msgErr =
