@@ -30,12 +30,13 @@
 
 // Rev 1.04 du 11 avril 2022
 // update : 
-// - name in colour according to type : 
+// - name in color according to type : 
 //      . green: local variables,
 //      . blue: Ninox functions
 //      . red : global function
 //      . black : fields
 //      . grey : tables
+// - dlocal variable detection
 // - detection of the type of variable returned by formulas, global functions and variables.
 // - display of possible fields on a formula, a global function or a variable that returns a table is followed by a dot.
 
@@ -665,7 +666,7 @@ window.exCodeMirrorNx = (function () {
                     }
                     s--;
                 }
-                if (s > 1) {
+                if (s >= 0) {
                     if (/^[a-zA-Z]/.test(line.charAt(s))) {
                         var type = getToken(line, s, s, /\w/).keyword;
                     }
