@@ -1,4 +1,4 @@
-var Version = '1.00';
+var Version = '1.01';
 
 //create global object to manage exBadges.
 if (!window.exBadges) window.exBadges = {};

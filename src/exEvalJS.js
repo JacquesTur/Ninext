@@ -30,7 +30,13 @@ window.exEvalJS = (function () {
         //add extended functions to the array
         evalFunctor.exFunctions['exEvalJS'] = exEvalJS;
         evalFunctor.exFunctions['exComments'] = exComments;
+        evalFunctor.exFunctions['exFind'] = exFind;
 
+
+        // IMPORTANT: force Ninox to be updated to take into account the extended functions
+        if (!database.adminMode) {
+            window.database.setSchema(window.database.originalSchema);
+        }
         /*
             Implementation of the new function eval in the Ninox functions array.
             Now the eval function can be called in two ways.
@@ -105,7 +111,6 @@ window.exEvalJS = (function () {
             var head = `var {${Object.keys(arguments).join(',')}} = args;`;
             var all = head + '\n' + javascript;
             var fn = Function('args', '$callback', all,);
-            debugger;
             try {
                 var Result = fn(arguments, cb);
                 //check if function use CallBack to return result asynchronously
@@ -154,6 +159,40 @@ window.exEvalJS = (function () {
                 cb(commentsList);
             }
         });
+    }
+
+    /*
+    getting the list of comments of a record
+    eval('exComments', {findValue:"", findType:"", returnFormat : } )
+        findeValue : value to find,
+        findType : type of value to find : 
+            "text" : text on code,
+            "field" : field name every where (code, table, colone, report...),
+            "table" : tabel name every where (code, table, colone, report...).
+        returnFormat : return value format :
+            "JSON" : JSON object,
+            "text" : stringify text,
+            "HMLT" : html formated list.
+
+    return array of JSON with :
+        table: table name, 
+        tableId: Ninox table Id, 
+        field: field name, 
+        fieldId: Ninox field Id, 
+        caption: human code when value is founded;
+    
+    exemple : eval('exComments', {findValue:"var", findType:"text"});
+    result -> [{}]
+    */
+    function exFind(fnt, params, db, cb) {
+        var r = exFinder.find(params.findValue, params.findType);
+
+        switch (params.returnFormat) {
+            case "JSON": cb(r); break;
+            case "stringify": cb(JSON.stringify(r, null, "\t")); break;
+            case "text": cb(JSON.stringify(r, null, "\t")); break;
+            default: cb(JSON.stringify(r));
+        }
     }
     return {
     }

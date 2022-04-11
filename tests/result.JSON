@@ -1,37 +1,1348 @@
-[
-    {
-        "type": "Invoice",
-        "typeId": "B",
-        "field": "NET Total",
-        "fieldId": "E",
-        "caption": "Somme de Total"
-    },
-    {
-        "type": "Invoice",
-        "typeId": "B",
-        "field": "VAT Amount",
-        "fieldId": "G",
-        "caption": "round(NET Total * VAT Rate) * 0.01"
-    },
-    {
-        "type": "Invoice",
-        "typeId": "B",
-        "field": "TOTAL",
-        "fieldId": "H",
-        "caption": "NET Total + VAT Amount"
-    },
-    {
-        "type": "Invoice Item",
-        "typeId": "C",
-        "field": "Item No",
-        "fieldId": "I",
-        "caption": "if Invoice then Total de Invoice Item[Invoice = myInvoice and number(ID) <= myID] else 0"
-    },
-    {
-        "type": "init",
-        "typeId": "H",
-        "field": "Init badges",
-        "fieldId": "A",
-        "caption": "html(\"\n\n<script>\n    //style base of badges\n    var badgeStyle = `\n            position: absolute;\n            display: flex;\n            top: 0px;\n            right: 0px;\n            background-color: red;\n            height: 15px;\n            line-height: 15px;\n            width: 15px;\n            text-align: center;\n            border-radius: 50%;\n            color: white;\n            justify-content: center;\n            font-size: smaller`;\n    // color of selection\n    var filesColor = '#4970ff';\n    var oldCommentColor = '#999999';\n    var newCommentColor = 'red';\n    // Threshold of new or old comment in ms. For 1 day = 1000ms * 60s * 60mn * 24h = 86400000ms\n    var oldCommentThreshold = 1000 * 60 * 60 * 24;\n\n    //event function called when tab changeed or popup opened\n    function selectTab(e) {\n        //call the original event fonction selectTab\n        if (this.oldSelectTab) this.oldSelectTab(e);\n\n        //recordver the current editor with links to html components\n        if (this.container) {\n            //load files of current record (is async function)\n            database.loadFiles(this.container.nid, (e, i) => {\n                // e = error text\n                // i = files array of id record this.id\n\n                // recover the attached files icon on current editor\n                var files = this.files.elTab[0];\n                if (files) {\n                    //recover or create the badge\n                    var badge = files.getElementsByTagName('span')[0];\n                    if (!badge) {\n                        badge = document.createElement('span');\n                        files.appendChild(badge);\n                    }\n\n                    //reading file list en exclude files connected to fields\n                    var n = database.typeOf(this.container.nid);\n                    var r = database.loadNodeSync(this.container.nid);\n                    if (n && r) {\n                        var s = {},\n                            l = n.fields;\n                        for (var c in l) {\n                            if (l.hasOwnProperty(c))\n                                if ('file' === l[c].base) {\n                                    var d = r[c];\n                                    d && (s[d] = !0)\n                                }\n                        }\n                        let f = []\n                        for (var u = 0; u < i.length; u++)\n                            s[(d = i[u]).name] || f.push(d);\n\n                        //number attached files\n                        var cnt = f.length;\n\n                        //set the badge\n                        badge.style.cssText = badgeStyle;\n                        badge.innerText = cnt.toString();\n                        badge.style.visibility = (cnt > 0) ? 'visible' : 'hidden';\n                        badge.style.backgroundColor = filesColor;\n                    }\n                };\n            });\n\n            //load files of current record (is async function)\n            database.loadComments(this.container.nid, (e, i) => {\n                // e = error text\n                // i = comments array of id record this.id\n\n                // recover the comment icon\n                var comments = this.comments ? this.comments.elTab[0] : null;\n                if (comments) {\n\n                    //recover or create the badge\n                    var badge = comments.getElementsByTagName('span')[0];\n                    if (!badge) {\n                        badge = document.createElement('span');\n                        comments.appendChild(badge);\n\n                    }\n\n                    //get durrent time to compare with comment date\n                    var ms = Date.now();\n\n                    //count the number of new and old comments \n                    var cntNew = i.reduce((total, el) => {\n                        if (ms - el[0] < oldCommentThreshold) total += 1;\n                        return total;\n                    }, 0);\n                    var cntAll = i.length;\n\n                    //set the badge with different color to indicate if there is new comments\n                    badge.style.cssText = badgeStyle;\n                    badge.innerText = cntNew ? cntNew.toString() : cntAll.toString();\n                    badge.style.visibility = (cntAll + cntNew > 0) ? 'visible' : 'hidden';\n                    badge.style.backgroundColor = (cntNew > 0) ? newCommentColor : oldCommentColor;\n\n                };\n            })\n        }\n\n    }\n\n    // On first call, put this selectTab in place to Ninox function and save the oldest\n    function setHook() {\n        var editor = ui.getCurrentEditor();\n        if (editor && !Object.getPrototypeOf(editor).oldSelectTab) {\n            if (!Object.getPrototypeOf(editor).oldSelectTab) {\n                Object.getPrototypeOf(editor).oldSelectTab = Object.getPrototypeOf(editor).selectTab;\n                Object.getPrototypeOf(editor).selectTab = selectTab;\n            }\n        }\n        else if (!editor)\n            setTimeout(setHook, 100);\n    }\n    setHook();\n\n\n\n</script>\n\")"
-    }
-]
+{
+	"seq": 1478,
+	"version": 407,
+	"nextTypeId": 13,
+	"types": {
+		"A": {
+			"nextFieldId": 28,
+			"caption": "Customer",
+			"captions": {},
+			"icon": "people",
+			"hidden": false,
+			"fields": {
+				"A": {
+					"base": "string",
+					"caption": "First Name",
+					"captions": {},
+					"required": false,
+					"order": 3,
+					"width": 1,
+					"formWidth": 0.3125,
+					"uuid": "gV4v4sVATFmawjjN",
+					"canWrite": "(var fn := A; (count((select A where (A = fn))) = 0))",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"B": {
+					"base": "string",
+					"caption": "Last Name",
+					"captions": {},
+					"required": false,
+					"order": 4,
+					"width": 1,
+					"formWidth": 0.28125,
+					"uuid": "qO71lAQi0DpMUTW1",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"C": {
+					"base": "string",
+					"caption": "Company",
+					"captions": {},
+					"required": false,
+					"order": 8,
+					"width": 2,
+					"formWidth": 0.40625,
+					"uuid": "Eh1s7SkFzC2oiaYs",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"D": {
+					"base": "string",
+					"caption": "Postal Code",
+					"captions": {},
+					"required": false,
+					"order": 6,
+					"width": 1,
+					"formWidth": 0.25,
+					"uuid": "TIutcEEtz4kgLv0E",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"E": {
+					"base": "string",
+					"caption": "City",
+					"captions": {},
+					"required": false,
+					"order": 7,
+					"width": 1,
+					"formWidth": 0.34375,
+					"uuid": "X0DARprEA4BP7vjK",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"F": {
+					"base": "string",
+					"caption": "Address",
+					"captions": {},
+					"required": false,
+					"order": 5,
+					"width": 2,
+					"formWidth": 0.59375,
+					"uuid": "RrTy8T1MblXyMDN4",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"G": {
+					"base": "email",
+					"caption": "Email",
+					"captions": {},
+					"required": false,
+					"order": 10,
+					"width": 4,
+					"formWidth": 1,
+					"uuid": "EcRnhBTkrRBRBRXu",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {}
+				},
+				"H": {
+					"base": "string",
+					"caption": "Customer No",
+					"captions": {},
+					"required": false,
+					"order": 1,
+					"width": 1,
+					"formWidth": 0.3125,
+					"uuid": "Pp8NhFGHY3H87Xqe",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"I": {
+					"base": "choice",
+					"caption": "Title",
+					"captions": {},
+					"required": true,
+					"order": 2,
+					"width": 1,
+					"formWidth": 0.28125,
+					"uuid": "FJUQht6iUVD47K0u",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"nextChoiceId": 3,
+					"values": {
+						"1": {
+							"caption": "Mr",
+							"captions": {},
+							"order": 0
+						},
+						"2": {
+							"caption": "Mrs",
+							"captions": {},
+							"order": 1
+						}
+					},
+					"choiceDefault": "1",
+					"choiceRenderer": "combo"
+				},
+				"J": {
+					"base": "rev",
+					"caption": "Invoices",
+					"captions": {},
+					"refTypeId": "B",
+					"refFieldId": "C",
+					"order": 11,
+					"viewConfig": {
+						"type": "B",
+						"sort": 0,
+						"descending": true,
+						"cols": [
+							{
+								"expression": "A",
+								"width": 113
+							},
+							{
+								"expression": "L",
+								"width": 99
+							},
+							{
+								"expression": "J",
+								"width": 93.5
+							},
+							{
+								"expression": "H",
+								"width": 117.5,
+								"agg": "sum"
+							},
+							{
+								"expression": "(H*1.2)",
+								"caption": "Formule"
+							}
+						]
+					},
+					"uuid": "PwEb8DUeqfI657Gc",
+					"visibility": "(((1+1) = 2) or isAdminMode())",
+					"height": 6,
+					"formWidth": 1,
+					"reverseRenderer": "table",
+					"tooltips": {}
+				},
+				"L": {
+					"base": "file",
+					"caption": "Photo",
+					"captions": {},
+					"required": false,
+					"order": 0,
+					"afterUpdate": "(I = \"après déclenchement\")",
+					"visibility": "((isAdminMode() or true) or (I = \"afficher seulement si\"))",
+					"width": 2,
+					"formWidth": 0.40625,
+					"uuid": "ZSX6Ocdy93RHnXbW",
+					"canWrite": "((isAdminMode() or true) or (I = \"write if\"))",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"height": 3,
+					"fileHandling": "any",
+					"bgSize": "contain"
+				},
+				"N": {
+					"base": "choice",
+					"caption": "Category",
+					"captions": {},
+					"required": false,
+					"order": 12,
+					"width": 4,
+					"formWidth": 1,
+					"uuid": "z7QwFSdbnbQuwnyT",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"nextChoiceId": 3,
+					"values": {
+						"1": {
+							"caption": "⭐️⭐️⭐️ Top Customer",
+							"captions": {},
+							"order": 0
+						},
+						"2": {
+							"caption": "New Customer",
+							"captions": {},
+							"order": 1
+						}
+					},
+					"choiceRenderer": "radio"
+				},
+				"O": {
+					"base": "string",
+					"caption": "Position",
+					"captions": {},
+					"required": false,
+					"order": 9,
+					"width": 2,
+					"formWidth": 0.59375,
+					"uuid": "SqJUgWN3gMfGy7jt",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"T": {
+					"base": "fn",
+					"caption": "FormuleA",
+					"captions": {},
+					"required": false,
+					"order": 14,
+					"visibility": "(isAdminMode() or (I = \"ee\"))",
+					"width": 2,
+					"formWidth": 0.625,
+					"uuid": "YxpVgx5BK0G7JW57",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "eval(\"exComments\",{id:this._id})",
+					"height": 1,
+					"onClick": "(var a := \"eee\"; (alert(\"click\")+U))"
+				},
+				"V": {
+					"base": "fn",
+					"caption": "Formule",
+					"captions": {},
+					"required": false,
+					"order": 15,
+					"formWidth": 0.25,
+					"uuid": "ocJ5zCf34sTNQOk3",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "\"eeee\"",
+					"height": 1,
+					"onClick": "(if U then (alert(\"rrrr\")) end)"
+				},
+				"W": {
+					"base": "fn",
+					"caption": "Formule 2",
+					"captions": {},
+					"required": false,
+					"order": 16,
+					"formWidth": 0.25,
+					"uuid": "CZ7hYDtPcd4xfeZA",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "\"eee\"",
+					"height": 1
+				},
+				"Z": {
+					"base": "rev",
+					"caption": "Print",
+					"captions": {},
+					"refTypeId": "J",
+					"refFieldId": "E",
+					"order": 17,
+					"viewConfig": {
+						"mode": "table"
+					},
+					"uuid": "DBS1ZhzALSM8A5zV",
+					"height": 6,
+					"formWidth": 1,
+					"reverseRenderer": "table",
+					"tooltips": {}
+				},
+				"A1": {
+					"base": "rev",
+					"caption": "Print2",
+					"captions": {},
+					"refTypeId": "J",
+					"refFieldId": "F",
+					"order": 18,
+					"viewConfig": {
+						"mode": "table"
+					},
+					"uuid": "Y6mSyWnmuVu4ap9j",
+					"height": 6,
+					"formWidth": 1,
+					"reverseRenderer": "table",
+					"tooltips": {}
+				}
+			},
+			"uis": {
+				"S": {
+					"base": "tab",
+					"order": 13,
+					"caption": "Comments",
+					"captions": {},
+					"uuid": "EFtKurvNgwoieTwo",
+					"formWidth": 1
+				}
+			},
+			"uuid": "YyW8Wc6dXes5xSdN",
+			"globalSearch": true,
+			"order": 0
+		},
+		"B": {
+			"nextFieldId": 18,
+			"caption": "Invoice",
+			"captions": {},
+			"icon": "note",
+			"hidden": false,
+			"fields": {
+				"A": {
+					"base": "date",
+					"caption": "Invoice Date",
+					"captions": {},
+					"required": false,
+					"order": 0,
+					"afterUpdate": "(let y := year(A); (let c := cnt((select B where (year(A) = y))); (B := ((y+\"-\")+format(c,\"000\")))))",
+					"formWidth": 0.25,
+					"uuid": "QI5ZlUZqUkPFlHih",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"dateDefault": "today",
+					"dateCalendar": true,
+					"dateCalendarFormat": "((B+\" \")+C.B)",
+					"dateYearly": false
+				},
+				"B": {
+					"base": "string",
+					"caption": "Invoice No",
+					"captions": {},
+					"required": false,
+					"order": 6,
+					"formWidth": 0.5,
+					"uuid": "tGk9g3b2uMIIUpXz",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"C": {
+					"base": "ref",
+					"caption": "Customer",
+					"captions": {},
+					"required": false,
+					"refTypeId": "A",
+					"refFieldId": "J",
+					"cascade": false,
+					"order": 7,
+					"viewConfig": {
+						"mode": "compact",
+						"columns": {}
+					},
+					"uuid": "ITvyIsdImr6Z4Da6",
+					"width": 2,
+					"formWidth": 0.5,
+					"referenceFormat": "((A+\" \")+B)",
+					"referenceRenderer": "popup",
+					"tooltips": {}
+				},
+				"D": {
+					"base": "rev",
+					"caption": "Invoice Items",
+					"captions": {},
+					"refTypeId": "C",
+					"refFieldId": "A",
+					"order": 8,
+					"viewConfig": {
+						"type": "C",
+						"sort": 1,
+						"descending": false,
+						"cols": [
+							{
+								"caption": "#",
+								"expression": "I",
+								"width": 46.000030517578125
+							},
+							{
+								"expression": "B",
+								"width": 397
+							},
+							{
+								"expression": "C",
+								"width": 96
+							},
+							{
+								"expression": "D",
+								"width": 231
+							},
+							{
+								"expression": "E",
+								"width": 185.99996948242188
+							}
+						]
+					},
+					"uuid": "X8t0WPvQete392DT",
+					"height": 6,
+					"formWidth": 1,
+					"reverseRenderer": "table",
+					"tooltips": {}
+				},
+				"E": {
+					"base": "fn",
+					"caption": "NET Total",
+					"captions": {},
+					"required": false,
+					"order": 9,
+					"formWidth": 0.25,
+					"uuid": "Y3Z3o16mYijTmxHA",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "sum(D.E)",
+					"numberFormat": "$ #,##0.00",
+					"height": 1
+				},
+				"F": {
+					"base": "number",
+					"caption": "VAT Rate",
+					"captions": {},
+					"required": false,
+					"order": 10,
+					"formWidth": 0.25,
+					"uuid": "hW5crw05JvZyeRS7",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"numberDefault": 19,
+					"numberFormat": "0.00 %"
+				},
+				"G": {
+					"base": "fn",
+					"caption": "VAT Amount",
+					"captions": {},
+					"required": false,
+					"order": 11,
+					"formWidth": 0.25,
+					"uuid": "voiizEEvYCXMywdA",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "(round((E*F))*0.01)",
+					"numberFormat": "$ #,##0.00",
+					"height": 1
+				},
+				"H": {
+					"base": "fn",
+					"caption": "TOTAL",
+					"captions": {},
+					"required": false,
+					"order": 12,
+					"formWidth": 0.25,
+					"uuid": "elQLAYS9KV9aDIVI",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "(E+G)",
+					"numberFormat": "$ #,##0.00",
+					"height": 1
+				},
+				"I": {
+					"base": "string",
+					"caption": "Remarks",
+					"captions": {},
+					"required": false,
+					"order": 13,
+					"formWidth": 1,
+					"uuid": "NRt1pssFNvwSYuyX",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": true,
+					"height": 4
+				},
+				"J": {
+					"base": "choice",
+					"caption": "Status",
+					"captions": {},
+					"required": true,
+					"order": 3,
+					"afterUpdate": "(M := today())",
+					"formWidth": 0.25,
+					"uuid": "xAj3d1q6TsiPC0MR",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"nextChoiceId": 5,
+					"values": {
+						"1": {
+							"caption": "new",
+							"captions": {},
+							"order": 0
+						},
+						"2": {
+							"caption": "sent",
+							"captions": {},
+							"icon": "glider",
+							"color": "rgb(255,239,191)",
+							"order": 1
+						},
+						"3": {
+							"caption": "paid",
+							"captions": {},
+							"icon": "money",
+							"color": "rgb(223,255,191)",
+							"order": 2
+						},
+						"4": {
+							"caption": "canceled",
+							"captions": {},
+							"order": 3
+						}
+					},
+					"choiceDefault": "1",
+					"choiceRenderer": "combo"
+				},
+				"L": {
+					"base": "fn",
+					"caption": "Due Date",
+					"captions": {},
+					"required": false,
+					"order": 2,
+					"formWidth": 0.25,
+					"uuid": "wDlj7xnq9PLg1ku2",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "(A+O)",
+					"height": 1
+				},
+				"M": {
+					"base": "date",
+					"caption": "Payment Date",
+					"captions": {},
+					"required": false,
+					"order": 4,
+					"formWidth": 0.25,
+					"uuid": "VQjw8LOGprWGFiIn",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"dateCalendar": true,
+					"dateYearly": false
+				},
+				"N": {
+					"base": "choice",
+					"caption": "Payment Method",
+					"captions": {},
+					"required": false,
+					"order": 5,
+					"formWidth": 0.25,
+					"uuid": "EiqEHzEydW0cu8YG",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"nextChoiceId": 4,
+					"values": {
+						"1": {
+							"caption": "PayPal",
+							"captions": {},
+							"icon": "paypal",
+							"color": "rgb(127,159,255)",
+							"order": 0
+						},
+						"2": {
+							"caption": "Bank transfer",
+							"captions": {},
+							"order": 1
+						},
+						"3": {
+							"caption": "Cash",
+							"captions": {},
+							"order": 2
+						}
+					},
+					"choiceRenderer": "combo"
+				},
+				"O": {
+					"base": "number",
+					"caption": "Payment Term",
+					"captions": {},
+					"required": false,
+					"order": 1,
+					"formWidth": 0.25,
+					"uuid": "knYbzprqntGITbtv",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {}
+				}
+			},
+			"uis": {},
+			"afterCreate": "(let y := year(A); (let c := cnt((select B where (year(A) = y))); (B := ((y+\"-\")+format(c,\"000\")))))",
+			"uuid": "SzsK6dR0XpA5j9Pm",
+			"globalSearch": true,
+			"order": 1
+		},
+		"C": {
+			"nextFieldId": 10,
+			"caption": "Invoice Item",
+			"captions": {},
+			"hidden": false,
+			"fields": {
+				"A": {
+					"base": "ref",
+					"caption": "Invoice",
+					"captions": {},
+					"required": false,
+					"refTypeId": "B",
+					"refFieldId": "D",
+					"cascade": true,
+					"order": 0,
+					"viewConfig": {
+						"mode": "compact",
+						"columns": {}
+					},
+					"uuid": "vokbSKUg2RnSZk9h",
+					"formWidth": 1,
+					"referenceRenderer": "popup",
+					"tooltips": {}
+				},
+				"B": {
+					"base": "string",
+					"caption": "Item",
+					"captions": {},
+					"required": false,
+					"order": 2,
+					"formWidth": 0.5,
+					"uuid": "Tejil4G45hfRQlZZ",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"C": {
+					"base": "number",
+					"caption": "Qty",
+					"captions": {},
+					"required": false,
+					"order": 4,
+					"formWidth": 0.25,
+					"uuid": "YnByBFgc6PmKDjQO",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"numberDefault": 1,
+					"numberFormat": "0"
+				},
+				"D": {
+					"base": "number",
+					"caption": "Price",
+					"captions": {},
+					"required": false,
+					"order": 5,
+					"formWidth": 0.25,
+					"uuid": "AiVF5HqdWnBw9Dho",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"numberFormat": "$ #,##0.00"
+				},
+				"E": {
+					"base": "fn",
+					"caption": "Total",
+					"captions": {},
+					"required": false,
+					"order": 6,
+					"formWidth": 0.25,
+					"uuid": "tpmjk5Rgz9eq7qwr",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "(D*C)",
+					"numberFormat": "$ #,##0.00",
+					"height": 1
+				},
+				"F": {
+					"base": "ref",
+					"caption": "Article",
+					"captions": {},
+					"required": false,
+					"refTypeId": "D",
+					"refFieldId": "D",
+					"cascade": false,
+					"order": 1,
+					"viewConfig": {
+						"mode": "compact",
+						"columns": {}
+					},
+					"afterUpdate": "((B := F.B);(D := F.C))",
+					"uuid": "pfGDWabol1mIZsxO",
+					"formWidth": 1,
+					"referenceRenderer": "popup",
+					"tooltips": {}
+				},
+				"G": {
+					"base": "string",
+					"caption": "Remarks",
+					"captions": {},
+					"required": false,
+					"order": 3,
+					"formWidth": 1,
+					"uuid": "jgQm83g287hDdcsa",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": true,
+					"height": 4
+				},
+				"I": {
+					"base": "fn",
+					"caption": "Item No",
+					"captions": {},
+					"required": false,
+					"order": 7,
+					"formWidth": 0.25,
+					"uuid": "wwyl5IKMKJyMrP8A",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "(let myID := number(_id); (let myInvoice := A; (if A then cnt((select C)[((A = myInvoice) and (number(_id) <= myID))]) else 0)))",
+					"height": 1
+				}
+			},
+			"uis": {},
+			"uuid": "dx9GFrHL2P8a7q1t",
+			"globalSearch": true,
+			"order": 2
+		},
+		"D": {
+			"nextFieldId": 6,
+			"caption": "Article",
+			"captions": {},
+			"icon": "present",
+			"hidden": false,
+			"fields": {
+				"A": {
+					"base": "string",
+					"caption": "Article No",
+					"captions": {},
+					"required": false,
+					"order": 0,
+					"width": 1,
+					"formWidth": 0.25,
+					"uuid": "ixrx1TjRcBkbQZZJ",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"B": {
+					"base": "string",
+					"caption": "Article",
+					"captions": {},
+					"required": false,
+					"order": 1,
+					"width": 3,
+					"formWidth": 0.75,
+					"uuid": "qiM1MLesCB13ysSH",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"C": {
+					"base": "number",
+					"caption": "Price",
+					"captions": {},
+					"required": false,
+					"order": 2,
+					"formWidth": 0.25,
+					"uuid": "A9UjBiLa2SqWhybb",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"numberFormat": "$ #,##0.00"
+				},
+				"D": {
+					"base": "rev",
+					"caption": "Revenue",
+					"captions": {},
+					"refTypeId": "C",
+					"refFieldId": "F",
+					"order": 4,
+					"viewConfig": {
+						"type": "C",
+						"sort": 0,
+						"group": 0,
+						"cols": [
+							{
+								"expression": "A.C.B",
+								"width": 86
+							},
+							{
+								"caption": "Rechnung",
+								"expression": "A.B",
+								"width": 173
+							},
+							{
+								"caption": "Datum",
+								"expression": "A.A",
+								"width": 78
+							},
+							{
+								"expression": "C",
+								"width": 86,
+								"agg": "sum"
+							},
+							{
+								"expression": "E",
+								"width": 233,
+								"agg": "sum"
+							}
+						]
+					},
+					"uuid": "ZkfsUjMAZpbwtOZH",
+					"height": 6,
+					"formWidth": 1,
+					"reverseRenderer": "table",
+					"tooltips": {}
+				}
+			},
+			"uis": {
+				"E": {
+					"base": "tab",
+					"order": 3,
+					"caption": "Revenue",
+					"captions": {},
+					"uuid": "h6LWUltqe2OxEL81",
+					"formWidth": 1
+				}
+			},
+			"uuid": "i4XyoJOxq23OBRVi",
+			"globalSearch": true,
+			"order": 3
+		},
+		"G": {
+			"nextFieldId": 18,
+			"caption": "exEvalJS",
+			"captions": {},
+			"icon": "heartbeat",
+			"hidden": false,
+			"fields": {
+				"D": {
+					"base": "string",
+					"caption": "arguments (exemple : \"a\":10, \"b\";\"hello\"",
+					"captions": {},
+					"required": false,
+					"order": 3,
+					"width": 1,
+					"formWidth": 0.3125,
+					"uuid": "HnVNqJdN0KJv7NEM",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": true,
+					"height": 12
+				},
+				"F": {
+					"base": "string",
+					"caption": "result",
+					"captions": {},
+					"required": false,
+					"order": 5,
+					"formWidth": 1,
+					"uuid": "R5PEsXX0NmqrCg9q",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": true,
+					"height": 4
+				},
+				"I": {
+					"base": "string",
+					"caption": "command line",
+					"captions": {},
+					"required": false,
+					"order": 4,
+					"width": 3,
+					"formWidth": 0.75,
+					"uuid": "BPpv14eH9Qz1Q1dG",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": true,
+					"height": 2
+				},
+				"P": {
+					"base": "string",
+					"caption": "title",
+					"captions": {},
+					"required": false,
+					"order": 0,
+					"width": 3,
+					"formWidth": 0.6875,
+					"uuid": "w6IBYhjw013hwH40",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"Q": {
+					"base": "html",
+					"caption": "code",
+					"captions": {},
+					"required": false,
+					"order": 2,
+					"width": 3,
+					"formWidth": 0.6875,
+					"uuid": "G8tjEeyuD64GJJ3j",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"height": 13
+				}
+			},
+			"uis": {
+				"E": {
+					"base": "button",
+					"order": 1,
+					"caption": "Execute",
+					"captions": {},
+					"uuid": "QhJr3CrRctw10HQm",
+					"width": 1,
+					"formWidth": 0.3125,
+					"fn": "((F := \"\");(var configJS := {javascript:text(Q),arguments:eval(D,this._id)}; ((F := eval(\"exEvalJS\",configJS));(I := ((\"eval(\"\"exEvalJS\"\", \"+configJS)+\");\")))))",
+					"buttonColor": "blue"
+				}
+			},
+			"uuid": "zUWZG3HhtYrTUa99",
+			"globalSearch": true,
+			"order": 4
+		},
+		"H": {
+			"nextFieldId": 8,
+			"caption": "init",
+			"captions": {},
+			"icon": "home",
+			"hidden": false,
+			"fields": {
+				"A": {
+					"base": "fn",
+					"caption": "Init badges",
+					"captions": {},
+					"required": false,
+					"order": 0,
+					"width": 4,
+					"formWidth": 0.9375,
+					"uuid": "IxaX7usuP1yZHp6F",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "(var configLoadModules := {completion:true,badges:true,evalJS:true}; ((function afterLoadModules() do (var a := \"closeRecord()\"; void) end);(var test := http(\"GET\",\"https://ninext-eszs.emporter.eu/loadModules.html\"); (debug(formatJSON(test));(var res := \"\"; ((if not test.error then (res := (\"<div>Emporter version<br></div><script>NinextHostAddress = 'https://ninext-eszs.emporter.eu';</script>\"+text(http(\"GET\",\"https://ninext-eszs.emporter.eu/loadModules.html\").result))) else (res := text(http(\"GET\",\"https://raw.githubusercontent.com/JacquesTur/Ninext/main/loadModules.html\").result)));html(res)))))))",
+					"height": 12
+				}
+			},
+			"uis": {},
+			"uuid": "xmociNZffeqTxsm5",
+			"globalSearch": true,
+			"order": 5
+		},
+		"I": {
+			"nextFieldId": 13,
+			"caption": "Function call",
+			"captions": {},
+			"hidden": false,
+			"fields": {
+				"A": {
+					"base": "fn",
+					"caption": "Formule",
+					"captions": {},
+					"required": false,
+					"order": 0,
+					"formWidth": 0.25,
+					"uuid": "pa2it0fId14W9XJG",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "((function myFunction(a : any) do ((capitalize(text(a.firsName))+\" \")+upper(text(a.lastName))) end);myFunction({firsName:\"Jacques\",lastName:\"TUR\"}))",
+					"height": 1
+				},
+				"B": {
+					"base": "fn",
+					"caption": "Formule 2",
+					"captions": {},
+					"required": false,
+					"order": 1,
+					"width": 2,
+					"formWidth": 0.5,
+					"uuid": "AAJFzTSrC2ftwR8t",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "((function myFunction(t : any) do (\"// recover the array from JSON array\";\"// and return the array filtred and sorted\";(var c := (for i in t.table do i end); (c[(lastName like \"T\")] order by this.firstName))) end);\"//call with array of JSON\";myFunction({table:(select A).[{firstName:A,lastName:B}]}))",
+					"height": 5
+				},
+				"C": {
+					"base": "fn",
+					"caption": "Formule 3",
+					"captions": {},
+					"required": false,
+					"order": 2,
+					"width": 4,
+					"formWidth": 0.875,
+					"uuid": "GGyUDlhGzUAhapZs",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "((function myFunction(t : any) do (\"// constructs an array of records identical to the one obtained with the Select function\";\"// the ID number is gotten by keeping only the number part in order to call the Record function\";(var c := (for i in t.table do record(A,number(extractx(text(i),\"\\d.*\"))) end); c.(A+c.B))) end);myFunction({table:(select A)}))",
+					"height": 4
+				},
+				"D": {
+					"base": "string",
+					"caption": "id",
+					"captions": {},
+					"required": false,
+					"order": 3,
+					"formWidth": 0.5,
+					"uuid": "FIuVaYWjF2aEgIoj",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"E": {
+					"base": "string",
+					"caption": "regexp",
+					"captions": {},
+					"required": false,
+					"order": 4,
+					"formWidth": 0.5,
+					"uuid": "X7RlHsPGRDGOq50T",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"F": {
+					"base": "fn",
+					"caption": "Formule 4",
+					"captions": {},
+					"required": false,
+					"order": 5,
+					"formWidth": 0.25,
+					"uuid": "u9QgoClUfjqbfo1c",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "splitx(D,E)",
+					"height": 1
+				},
+				"G": {
+					"base": "fn",
+					"caption": "Formule 5",
+					"captions": {},
+					"required": false,
+					"order": 6,
+					"formWidth": 0.25,
+					"uuid": "iR9unxbdNStUbrQp",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "extractx(D,E)",
+					"height": 1
+				},
+				"H": {
+					"base": "fn",
+					"caption": "Formule 6",
+					"captions": {},
+					"required": false,
+					"order": 7,
+					"formWidth": 0.25,
+					"uuid": "KOkWveeaZ1FznJyK",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "testx(D,E)",
+					"height": 1
+				},
+				"I": {
+					"base": "fn",
+					"caption": "Formule 7",
+					"captions": {},
+					"required": false,
+					"order": 8,
+					"width": 3,
+					"formWidth": 0.78125,
+					"uuid": "s2mkDQah6mSIO9Ky",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "((function test(t : any) do (for i in t.table do (select A where (_id = i)) end) end);(var t := test({table:(select A)}); t.A))",
+					"height": 1
+				},
+				"J": {
+					"base": "fn",
+					"caption": "Formule 8",
+					"captions": {},
+					"required": false,
+					"order": 9,
+					"formWidth": 0.25,
+					"uuid": "Bu2E5SVbld74FmIL",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "((function myFunction(myUsers : user) do string((for u in myUsers do userName(u) end)) end);myFunction(users()))",
+					"height": 1
+				},
+				"K": {
+					"base": "fn",
+					"caption": "Formule 9",
+					"captions": {},
+					"required": false,
+					"order": 10,
+					"formWidth": 0.25,
+					"uuid": "MTpZi7OURQNEADVE",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "((function myFunction(a : any) do typeof((for i in a.b do i end)[( like \"1\")]) end);(var t := [\"a\", \"b\"]; myFunction({b:(select A)})))",
+					"height": 1
+				}
+			},
+			"uis": {
+				"L": {
+					"base": "tab",
+					"order": 11,
+					"caption": "Onglet",
+					"captions": {},
+					"uuid": "twrP2kM3RWHSk19c",
+					"formWidth": 1
+				}
+			},
+			"uuid": "AYtyosy3yTNoQDpk",
+			"globalSearch": true,
+			"order": 6
+		},
+		"J": {
+			"nextFieldId": 7,
+			"caption": "Print",
+			"captions": {},
+			"hidden": false,
+			"fields": {
+				"A": {
+					"base": "fn",
+					"caption": "Name1",
+					"captions": {},
+					"required": false,
+					"order": 0,
+					"formWidth": 0.25,
+					"uuid": "X8borzeIiWjTuGd1",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "E.A",
+					"height": 1
+				},
+				"D": {
+					"base": "fn",
+					"caption": "Name2",
+					"captions": {},
+					"required": false,
+					"order": 1,
+					"formWidth": 0.25,
+					"uuid": "kH5UJlGWmQ00YAc9",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "F.A",
+					"height": 1
+				},
+				"E": {
+					"base": "ref",
+					"caption": "Customer1",
+					"captions": {},
+					"required": false,
+					"refTypeId": "A",
+					"refFieldId": "Z",
+					"cascade": false,
+					"order": 2,
+					"viewConfig": {
+						"mode": "table"
+					},
+					"uuid": "Ih3bfip9cQ9joe7g",
+					"formWidth": 1,
+					"referenceRenderer": "popup",
+					"tooltips": {}
+				},
+				"F": {
+					"base": "ref",
+					"caption": "Customer2",
+					"captions": {},
+					"required": false,
+					"refTypeId": "A",
+					"refFieldId": "A1",
+					"cascade": false,
+					"order": 3,
+					"viewConfig": {
+						"mode": "table"
+					},
+					"uuid": "mrJujcdyuWcXoghH",
+					"formWidth": 1,
+					"referenceRenderer": "popup",
+					"tooltips": {}
+				}
+			},
+			"uis": {},
+			"uuid": "ncqw1nl9Y91urWDp",
+			"globalSearch": true,
+			"order": 7
+		},
+		"K": {
+			"nextFieldId": 1,
+			"caption": "PrintMaster",
+			"captions": {},
+			"hidden": false,
+			"fields": {},
+			"uis": {},
+			"uuid": "Np7nrACNxoG4nYmw",
+			"globalSearch": true,
+			"order": 8
+		},
+		"L": {
+			"nextFieldId": 8,
+			"caption": "exFinder",
+			"captions": {},
+			"hidden": false,
+			"fields": {
+				"A": {
+					"base": "string",
+					"caption": "Find value",
+					"captions": {},
+					"required": false,
+					"order": 0,
+					"formWidth": 0.5,
+					"uuid": "kG0qR72A0I1j4R1l",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"stringAutocorrect": true,
+					"stringMultiline": false,
+					"height": 1
+				},
+				"G": {
+					"base": "fn",
+					"caption": "Formule",
+					"captions": {},
+					"required": false,
+					"order": 1,
+					"width": 4,
+					"formWidth": 0.9375,
+					"uuid": "jFsSSVlI8oBlgx27",
+					"globalSearch": true,
+					"hasIndex": false,
+					"tooltips": {},
+					"fn": "(var config := {findValue:A,findType:\"text\",returnFormat:\"JSON\"}; (var lst := eval(\"exFind\",config); (var r := html(\"\"); ((for i in lst do (debug(debugValueInfo(i));(r := html(((((((raw(r)+i.table)+\".\")+i.field)+\"<span style='color:grey; padding-left:10px'><tr>\")+i.caption)+\"</span><br>\")))) end);html(r)))))",
+					"height": 14
+				}
+			},
+			"uis": {},
+			"uuid": "nXV1fqmhLc32j7Xb",
+			"globalSearch": true,
+			"order": 9
+		}
+	},
+	"afterOpenBehavior": "restoreNavigation",
+	"afterOpen": "popupRecord(first((select H)))",
+	"globalCode": "((function myGlobalFunction(myText : text,myDate : date) do ((myText+format(myDate,\"DD/MM/YYYY\"))) end))",
+	"fileSync": "full"
+}

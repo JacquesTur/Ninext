@@ -63,6 +63,7 @@
     exModules.log(`Modules version ${Version} loaded`)
 
     if (!window.exUtils) exModules.loadModule(GitHubAddress, 'src/exUtils.js', false);
+    if (!window.exFinder) exModules.loadModule(GitHubAddress, 'src/exFinder.js', false);
 
     var exConfigModules = {
       completion: true,

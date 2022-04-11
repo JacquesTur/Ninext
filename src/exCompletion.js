@@ -28,8 +28,20 @@
 // - added Ctrl-Space (or any other key defined in configLoadModules.completion) to display the completion list at any time, 
 // - positioning the cursor after the opening parenthesis for global functions.
 
+// Rev 1.04 du 11 avril 2022
+// update : 
+// - name in colour according to type : 
+//      . green: local variables,
+//      . blue: Ninox functions
+//      . red : global function
+//      . black : fields
+//      . grey : tables
+// - detection of the type of variable returned by formulas, global functions and variables.
+// - display of possible fields on a formula, a global function or a variable that returns a table is followed by a dot.
 
-var Version = '1.03 beta';
+
+
+var Version = '1.04 beta';
 
 var CCodeMirrorStyle = `
     .CodeMirror-hints {
@@ -69,7 +81,7 @@ var CCodeMirrorStyle = `
     }
 
     .CodeMirror-hint-label {
-        color: inherit !important;
+        color: inherit;
     }
 
     .CodeMirror-hint-grey-label {
@@ -628,20 +640,40 @@ window.exCodeMirrorNx = (function () {
     }
     function nxHint(editor, options) {
 
+
         var cursor = editor.getCursor(), line = editor.getLine(cursor.line)
         var start = cursor.ch, end = cursor.ch
         var token = getToken(line, start, end, /\w/);
 
         var type = null;
-        if (line.charAt(token.start - 1) == '.')
+        if (line.charAt(token.start - 1)) {
             if (line.charAt(token.start - 2) == `'`)
                 var type = getToken(line, token.start - 3, token.start - 2, /[^']/).keyword;
-            else
-                if (/^[a-zA-Z]/.test(line.charAt(token.start - 2))) {
-                    var type = getToken(line, token.start - 3, token.start - 2, /\w/).keyword;
+            else {
+                var s = token.start - 2;
+                if (line.charAt(token.start - 2) == `)`) {
+                    var p = 1;
+
+                    var comment = false;
+                    while (p > 0 && s > 1) {
+                        s -= 1;
+                        switch (line.charAt(s)) {
+                            case ')': p++; break;
+                            case '"': comment = !comment; break;
+                            case '(': p--; break;
+                        }
+                    }
+                    s--;
                 }
+                if (s > 1) {
+                    if (/^[a-zA-Z]/.test(line.charAt(s))) {
+                        var type = getToken(line, s, s, /\w/).keyword;
+                    }
+                }
+            }
+        }
         return {
-            list: getCompletions(type, token.keyword, options),
+            list: getCompletions(type, token.keyword, /*editor.getRange({ line: 0, ch: 0 }, editor.getCursor())*/ editor.getValue(), options),
             from: Pos(cursor.line, token.start),
             to: Pos(cursor.line, token.end)
         };
@@ -655,17 +687,18 @@ window.exCodeMirrorNx = (function () {
         else return caption;
     }
 
-    function getCompletions(currentType, keywords, options) {
+    function getCompletions(currentType, keywords, codeToCursor, options) {
 
-        function getElement(text, type, displayText, base, iconClassName, colorName) {
+        function getElement(text, typeValue, displayText, base, iconClassName, colorName, typeId = null) {
             return {
                 displayText: displayText ? displayText : '',
                 text: text,
-                type: type,
+                typeVal: typeValue,
                 classeName: 'fn-tools-field',
                 base: base,
                 colorName: colorName ? colorName : 'light-grey',
                 iconClassName: iconClassName,
+                type: typeId,
                 render: function (elt, data, cur) {
                     elt.classList.add('fn-tools-field');
                     var icon = document.createElement('div');
@@ -675,6 +708,13 @@ window.exCodeMirrorNx = (function () {
                     var label = document.createElement('div');
                     label.className = 'fn-tools-field-label CodeMirror-hint-label'
                     label.innerText = cur.text;
+                    switch (cur.typeVal) {
+                        case 'nxFunction': label.style.color = 'blue'; break;
+                        case 'globalFunction': label.style.color = 'red'; break;
+                        case 'type': label.style.color = 'gray'; break;
+                        case 'var': label.style.color = 'green'; break;
+                        default: label.style.color = 'black'; break;
+                    }
                     elt.appendChild(label);
 
                     if (cur.displayText) {
@@ -689,8 +729,7 @@ window.exCodeMirrorNx = (function () {
                     if (completion.text) {
                         cm.replaceRange(completion.text, completion.from || data.from,
                             completion.to || data.to, 'complete');
-                        if (['nxFunction', 'globalFunction'].includes(completion.type)) {
-                            debugger;
+                        if (['nxFunction', 'globalFunction'].includes(completion.typeVal)) {
                             var pos = completion.text.search(/\(/) + 1 - completion.text.length;
                             cm.moveH(pos, 'char');
                         }
@@ -699,9 +738,36 @@ window.exCodeMirrorNx = (function () {
             }
         }
         var found = [];
+        var variables = [];
         options.completeSingle = false;
-            
+        //<div class="i-32-12 i-red i-warning"></div>
+
+        function findVariables(exp) {
+
+            if (exp.scopeVariable) {
+                var type = exp.scopeVariable.returnType.type ? exp.scopeVariable.returnType.type : null;
+                variables.push({ name: exp.scopeVariable.caption, base: exp.scopeVariable.returnType.base, type: type });
+            }
+            if (exp.exprA) findVariables(exp.exprA)
+            if (exp.exprB) findVariables(exp.exprB)
+            if (exp.exprs) exp.exprs.forEach(e => findVariables(e))
+
+        }
+        debugger;
+        var codeExp = queries.parseSystem(database.schema, database.schema.types[ui.currentView.tid], codeToCursor, null);
+        findVariables(codeExp);
+
+
         if (!currentType) {
+            variables.forEach(v => {
+                if (v.name.search(RegExp(keywords, 'i')) >= 0) {
+                    var iconClassName = 'i-32-24 i-field-' + v.base;
+                    if (v.type)
+                        iconClassName = 'nav-item-icon ' + (v.type.icon ? 'ic ic-' + v.type.icon : 'i-32-24 ic i-setting-table')
+                    found.push(getElement(v.name, 'var', v.type ? 'var -> ' + v.type.caption : 'var', v.base, iconClassName, 'grey', v.type ? v.type.id : null));
+                }
+            })
+
             nxFunctions.forEach(fn => {
                 if (fn.function.search(RegExp(keywords, 'i')) >= 0) {
                     found.push(getElement(fn.function, 'nxFunction', null, 'apply', 'i-32-24 i-field-formula', 'blue'))
@@ -713,9 +779,16 @@ window.exCodeMirrorNx = (function () {
 
                 if (func.id.search(RegExp(keywords, 'i')) >= 0) {
                     strFunc = `${getHumanName(func.id)}(${func.params.map(p => { return getHumanName(p.caption) }).join(',')})`
-                    found.push(getElement(strFunc, 'globalFunction', null, 'fn', 'i-32-24 i-field-formula', 'red'));
+                    var returnType = func.exprA ? func.exprA.returnType : func.returnType;
+                    var iconClassName = 'i-32-24 i-field-' + returnType.base;
+                    if (returnType.type)
+                        iconClassName = 'nav-item-icon ' + (returnType.type.icon ? 'ic ic-' + returnType.type.icon : 'i-32-24 ic i-setting-table')
+
+
+                    found.push(getElement(strFunc, 'globalFunction', returnType.type ? 'Fx -> ' + returnType.type.caption : returnType.base, 'fn', iconClassName, 'red', returnType.type ? returnType.type : null));
                 }
             });
+
         }
         if (currentType) {
 
@@ -734,6 +807,19 @@ window.exCodeMirrorNx = (function () {
                             type = field.exp.returnType.type;
                     }
                 }
+                if (!type) variables.forEach(v => {
+                    if (v.name == currentType && v.type)
+                        type = v.type;
+                })
+
+                if (!type)
+                    Object.keys(database.schema.globalScope).forEach(f => {
+                        var func = database.schema.globalScope[f];
+                        if (func.id == currentType && func.exprA && func.exprA.returnType.type)
+                            type = func.exprA.returnType.type;
+                    })
+
+
             }
 
             if (type) {
@@ -749,7 +835,7 @@ window.exCodeMirrorNx = (function () {
             Object.keys(database.schema.types).forEach(t => {
                 var type = database.schema.types[t];
                 if (type.caption.search(RegExp(keywords, 'i')) >= 0)
-                    found.push(getElement(getHumanName(type.caption), 'type', null, null, 'nav-item-icon ' + (type.icon ? 'ic ic-' + type.icon : 'i-32-24 ic i-setting-table')))
+                    found.push(getElement(getHumanName(type.caption), 'type', null, null, 'nav-item-icon ' + (type.icon ? 'ic ic-' + type.icon : 'i-32-24 ic i-setting-table'), type.id))
 
                 Object.keys(type.fields).forEach(f => {
                     var field = type.fields[f];
@@ -760,18 +846,33 @@ window.exCodeMirrorNx = (function () {
             });
         }
 
+
+
+
         found.sort((a, b) => {
             var ra = a.text.search(RegExp(keywords, 'i'));
             var rb = b.text.search(RegExp(keywords, 'i'));
+            var r = 0;
             if (ra == 0 && rb == 0)
-                return 0;
+
+                r = (a.text < b.text);
+
             else
-                if (ra == 0)
-                    return -1;
+                if (ra < rb)
+                    r = -1;
                 else
-                    if (rb == 0)
-                        return 1;
-                    else return 0;
+                    if (ra > rb)
+                        r = 1;
+                    else r = 0;
+            if (r == 0)
+                if (a.text > b.text)
+                    r = 1;
+                else
+                    if (a.text < b.text)
+                        r = -1;
+                    else
+                        r = 0;
+            return r;
         })
         if (!found.length) found.push(getElement('', '', `no items found    `, null, ''))
 
