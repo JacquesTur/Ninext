@@ -1,8 +1,9 @@
-version = '1.01 beta';
+exUtilsVersion = '1.01 beta';
 
 window.exUtils = (function () {
   console.log("exutils.constructor");
   return {
+    version : exUtilsVersion,
     test: function () {
       return "ok";
     },
@@ -185,6 +186,6 @@ window.exUtils = (function () {
 
   };
 })();
-exModules.log(`Utils version ${Version} loaded`)
+
 
 

@@ -8,12 +8,13 @@
   //Il est appelé comme une fonction avec comme paramètre rootAddress qui indique l'adresse
   //de base du serveur pour trouver les autres modules.
 
-  var Version = '1.01 beta';
+  var exModulesVersion = '1.01 beta';
 
   if (!window.exModules) {
     window.exModules = (function () {
       //    this.log('exModule.constructor');
       return {
+        version: exModulesVersion,
         get myDiv() {
           return document.getElementById('exLoadModule');
         },
@@ -57,13 +58,16 @@
         },
       };
     })();
-
+    debugger;
     // exemple d'utilitsation :
     //exModules.loadModule(rootAddress, 'Modules/exUtils.js');
-    exModules.log(`Modules version ${Version} loaded`)
+    exModules.log(`Modules version ${exModules.version} loaded`)
 
     if (!window.exUtils) exModules.loadModule(GitHubAddress, 'src/exUtils.js', false);
+    exModules.log(`exUtils version ${exUtils.version} loaded`);
+
     if (!window.exFinder) exModules.loadModule(GitHubAddress, 'src/exFinder.js', false);
+    exModules.log(`exFinder version ${exFinder.version} loaded`);
 
     var exConfigModules = {
       completion: true,
@@ -74,15 +78,35 @@
     exConfigModules = exUtils.extractJSONValueInFieldFn('configLoadModules', 'exLoadModule');
 
     if (exConfigModules.completion) exModules.loadModule(GitHubAddress, 'src/exCompletion.js', false);
-    if (exConfigModules.badges) exModules.loadModule(GitHubAddress, 'src/exBadges.js', false);
-    if (exConfigModules.evalJS) exModules.loadModule(GitHubAddress, 'src/exEvalJS.js', false);
+    exModules.log(`exAutoCompletion version ${exAutoCompletion.version} loaded`);
 
+    if (exConfigModules.badges) exModules.loadModule(GitHubAddress, 'src/exBadges.js', false);
+    exModules.log(`exBadges version ${exBadges.version} loaded`);
+
+    if (exConfigModules.evalJS) exModules.loadModule(GitHubAddress, 'src/exEvalJS.js', false);
+    exModules.log(`exEvalJS version ${exEvalJS.version} loaded`);
 
     if (exModules.myDiv) {
       exUtils.fireNxFunction('afterLoadModules', 'exLoadModule');
     }
   }
-  else
-    exModules.log(`Modules version ${Version} already loaded`);
+  else {
 
+    if (window.exModules) {
+      exModules.log(`exModules version ${exModules.version} already loaded`);
+      if (window.exUtils) exModules.log(`exUtils version ${exUtils.version} already loaded`);
+      if (window.exFinder) exModules.log(`exFinder version ${exFinder.version} already loaded`);
+      if (window.exAutoCompletion) exModules.log(`exAutoCompletion version ${exAutoCompletion.version} already loaded`);
+      if (window.exBadges) exModules.log(`exBadges version ${exBadges.version} already loaded`);
+      if (window.exEvalJS) exModules.log(`exEvalJS version ${exEvalJS.version} already loaded`);
+     
+    }
+
+  }
+  if (window.exModules) {
+    exModules.log(`
+      Thanks for use extended functions :o)`);
+      exModules.myDiv.innerHTML += `
+      <a target='_blank' href='https://github.com/JacquesTur/Ninext'>click here and see more un GitHub</a>`;
+  }
 </script>

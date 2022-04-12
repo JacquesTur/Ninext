@@ -1,4 +1,4 @@
-var Version = '1.00 beta';
+var exFinderVersion = '1.00 beta';
 
 exFinder = (function () {
     const expsName = ["onClick", "beforeUpdate", "afterUpdate", "visibility", "canWrite", "beforeShow", "afterHide"];
@@ -6,54 +6,58 @@ exFinder = (function () {
     function getExpressions(obj) {
 
         var lst = [];
-
-        if (obj.fn) {
-            if (!obj.exp) obj.exp = queries.parseSystem(database.schema, obj.type, obj.fn, null);
-            lst.push({ obj: obj, name: "fn", exp: obj.exp, caption: obj.exp.toHumanString('', 0) });
-        }
-
-        expsName.forEach(n => {
-            if (obj[n] && obj[n].length && !obj[n + "Exp"]) {
-         
-                obj[n + "Exp"] = queries.parseSystem(database.schema, obj.type, obj[n], null);
-                if (exp)
-                    obj.onClickExp = exp;
-            }
-        })
-
-        for (var key in Object.keys(obj)) {
-            var name = Object.keys(obj)[key].match(RegExp('.*(?=Exp\\b)'));
-            if (name && name[0].length) {
-
-                var exp = obj[name[0] + "Exp"];
-                var caption = obj[name[0]];
-                lst.push({ obj: obj, name: name[0], exp: exp, caption: exp.toHumanString('', 0) });
+        try {
+            if (obj.fn) {
+                if (!obj.exp) obj.exp = queries.parseSystem(database.schema, obj.type, obj.fn, null);
+                lst.push({ obj: obj, name: "fn", exp: obj.exp, caption: obj.exp.toHumanString('', 0) });
             }
 
+            expsName.forEach(n => {
+                if (obj[n] && obj[n].length && !obj[n + "Exp"]) {
+
+                    obj[n + "Exp"] = queries.parseSystem(database.schema, obj.type, obj[n], null);
+                    if (exp)
+                        obj.onClickExp = exp;
+                }
+            })
+
+            for (var key in Object.keys(obj)) {
+                var name = Object.keys(obj)[key].match(RegExp('.*(?=Exp\\b)'));
+                if (name && name[0].length) {
+
+                    var exp = obj[name[0] + "Exp"];
+                    var caption = obj[name[0]];
+                    lst.push({ obj: obj, name: name[0], exp: exp, caption: exp.toHumanString('', 0) });
+                }
+
+            }
+
+            if (obj.viewConfig) {
+                var type = database.schema.types[obj.viewConfig.type];
+                if (obj.viewConfig.cols)
+                    obj.viewConfig.cols.forEach(c => {
+
+
+                        var exp = queries.parseSystem(database.schema, type, c.expression, null);
+                        var name = c.caption ? c.caption : exp.toHumanString('', 0);
+                        lst.push({ obj: obj, name: name, exp: exp, caption: exp.toHumanString('', 0) });
+
+                        if (c.conditionalStyling) {
+
+                            c.conditionalStyling.forEach(cs => {
+                                if (cs.operand == 'f(x)') {
+
+                                    var csExp = queries.parseSystem(database.schema, type, cs.value, null)
+
+                                    lst.push({ obj: obj, name: name + ".conditionalStyling", exp: csExp, caption: csExp.toHumanString('', 0) });
+                                }
+                            })
+                        }
+                    })
+            }
         }
-
-        if (obj.viewConfig) {
-            var type = database.schema.types[obj.viewConfig.type];
-            if (obj.viewConfig.cols)
-                obj.viewConfig.cols.forEach(c => {
-
-                 
-                    var exp = queries.parseSystem(database.schema, type, c.expression, null);
-                    var name = c.caption ? c.caption : exp.toHumanString('', 0) ;
-                    lst.push({ obj: obj, name: name, exp: exp, caption: exp.toHumanString('', 0) });
-                    
-                    if (c.conditionalStyling) {
-                  
-                        c.conditionalStyling.forEach(cs => {
-                            if (cs.operand == 'f(x)') {
-
-                                var csExp = queries.parseSystem(database.schema, type, cs.value, null)
-
-                                lst.push({ obj: obj, name: name + ".conditionalStyling", exp: csExp, caption: csExp.toHumanString('', 0) });
-                            }
-                        })
-                    }
-                })
+        catch (err) {
+            console.log("getExpressions error : "+err.message)
         }
         return lst;
     }
@@ -78,7 +82,7 @@ exFinder = (function () {
                 });
             });
         }
-    
+        debugger;
         return lstFunctions;
 
     }
@@ -103,15 +107,16 @@ exFinder = (function () {
     }
 
     return {
+        version : exFinderVersion,
         find: function (value, typeOfValue) {
             var lst = getFindElements();
             return findInList(lst, value, typeOfValue);
 
         }
     }
+
 })();
 
-exModules.log(`exFinder version ${Version} loaded`)
 
 
 

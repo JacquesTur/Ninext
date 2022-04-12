@@ -1,7 +1,7 @@
-var Version = '1.01';
+var exBadgesVersion = '1.01';
 
 //create global object to manage exBadges.
-if (!window.exBadges) window.exBadges = {};
+if (!window.exBadges) window.exBadges = {version:exBadgesVersion};
 
 //style base of badges
 exBadges.style = `
@@ -167,5 +167,3 @@ function setHook() {
     }
 }
 setHook();
-
-exModules.log( `Badges version ${Version} loaded`)

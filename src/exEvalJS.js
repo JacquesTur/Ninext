@@ -1,4 +1,4 @@
-var Version = '1.01 beta';
+var exEvalJSVersion = '1.01 beta';
 
 // Version 1.01
 // change the name of the callback function from cb to $callback
@@ -57,6 +57,7 @@ window.exEvalJS = (function () {
 
         evalFunctor.hook = function (fnt, params, db, ret) {
             try {
+                debugger;
                 //search if the first parameter of the eval function strictly contains the name of an extended function
                 if (evalFunctor.exFunctions[fnt]) {
                     //if this is the case, the corresponding function is called
@@ -71,6 +72,7 @@ window.exEvalJS = (function () {
             }
         };
 
+        debugger;
         //recording the hooked function in the NinoxScript function array
         Ctx.F[evalFunctor.functorId] = evalFunctor.hook;
     }
@@ -185,6 +187,7 @@ window.exEvalJS = (function () {
     result -> [{}]
     */
     function exFind(fnt, params, db, cb) {
+        debugger;
         var r = exFinder.find(params.findValue, params.findType);
 
         switch (params.returnFormat) {
@@ -195,9 +198,9 @@ window.exEvalJS = (function () {
         }
     }
     return {
+        version : exEvalJSVersion,
     }
 })();
 
-exModules.log(`EvalJS version ${Version} loaded`)
 
 

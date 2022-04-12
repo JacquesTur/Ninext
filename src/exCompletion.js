@@ -42,7 +42,7 @@
 
 
 
-var Version = '1.04 beta';
+var exAutoCompletionVersion = '1.04 beta';
 
 var CCodeMirrorStyle = `
     .CodeMirror-hints {
@@ -631,7 +631,7 @@ window.exCodeMirrorHint = (function () {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
-window.exCodeMirrorNx = (function () {
+window.exAutoCompletion = (function () {
     var Pos = CodeMirror.Pos;
 
     function getToken(line, start, end, regexp) {
@@ -673,8 +673,9 @@ window.exCodeMirrorNx = (function () {
                 }
             }
         }
+    
         return {
-            list: getCompletions(type, token.keyword, /*editor.getRange({ line: 0, ch: 0 }, editor.getCursor())*/ editor.getValue(), options),
+            list: getCompletions(type, token.keyword, /*editor.getRange({ line: 0, ch: 0 }, editor.getCursor())*/ editor.getValue(" "), options),
             from: Pos(cursor.line, token.start),
             to: Pos(cursor.line, token.end)
         };
@@ -755,7 +756,7 @@ window.exCodeMirrorNx = (function () {
 
         }
         debugger;
-        var codeExp = queries.parseSystem(database.schema, database.schema.types[ui.currentView.tid], codeToCursor, null);
+        var codeExp = queries.parseHuman(database.schema, database.schema.types[ui.currentView.tid], codeToCursor, null);
         findVariables(codeExp);
 
 
@@ -879,7 +880,9 @@ window.exCodeMirrorNx = (function () {
 
         return found;
     }
-
+    return {
+        version : exAutoCompletionVersion
+    }
 })();
 
 
@@ -888,7 +891,7 @@ if (shortKey) {
     if (!CodeMirror.defaults.extraKeys) CodeMirror.defaults.extraKeys = [];
     CodeMirror.defaults.extraKeys[shortKey] = 'autocomplete';
 }
-exModules.log(`AutoCompletion version ${Version} loaded`)
+
 
 
 if (!CodeMirror.oldFromTextArea) {
