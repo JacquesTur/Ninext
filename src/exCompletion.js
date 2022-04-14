@@ -42,7 +42,7 @@
 
 
 
-var exAutoCompletionVersion = '1.04 beta';
+var exAutoCompletionVersion = '1.05 beta';
 
 var CCodeMirrorStyle = `
     .CodeMirror-hints {
@@ -673,7 +673,7 @@ window.exAutoCompletion = (function () {
                 }
             }
         }
-    
+
         return {
             list: getCompletions(type, token.keyword, /*editor.getRange({ line: 0, ch: 0 }, editor.getCursor())*/ editor.getValue(" "), options),
             from: Pos(cursor.line, token.start),
@@ -752,20 +752,28 @@ window.exAutoCompletion = (function () {
             }
             if (exp.exprA) findVariables(exp.exprA)
             if (exp.exprB) findVariables(exp.exprB)
-            if (exp.exprs) exp.exprs.forEach(e => findVariables(e))
+            if (exp.exprs) exp.exprs.forEach(e => {
+                findVariables(e)
+            })
+            if (exp.exps) exp.exps.forEach(e => {
+                findVariables(e)
+            })
 
         }
-        var codeExp = queries.parseHuman(database.schema, database.schema.types[ui.currentView.tid], codeToCursor, null);
-        findVariables(codeExp);
 
+
+        var codeExp = queries.parseHuman(database.schema, database.schema.types[ui.currentView.tid], codeToCursor, null);
+        debugger;
+        findVariables(codeExp);
 
         if (!currentType) {
             variables.forEach(v => {
                 if (v.name.search(RegExp(keywords, 'i')) >= 0) {
-                    var iconClassName = 'i-32-24 i-field-' + v.base;
-                    if (v.type)
-                        iconClassName = 'nav-item-icon ' + (v.type.icon ? 'ic ic-' + v.type.icon : 'i-32-24 ic i-setting-table')
-                    found.push(getElement(v.name, 'var', v.type ? 'var -> ' + v.type.caption : 'var', v.base, iconClassName, 'grey', v.type ? v.type.id : null));
+
+                    // var iconClassName = 'i-32-24 i-field-' + v.base;
+                    // if (v.type)
+                    //     iconClassName = 'nav-item-icon ' + (v.type.icon ? 'ic ic-' + v.type.icon : 'i-32-24 ic i-setting-table')
+                    found.push(getElement(v.name, 'var', v.type ? 'var -> ' + v.type.caption : 'var', v.base, exUtilsNx.getIconClassName(v), 'grey', v.type ? v.type.id : null));
                 }
             })
 
@@ -781,12 +789,12 @@ window.exAutoCompletion = (function () {
                 if (func.id.search(RegExp(keywords, 'i')) >= 0) {
                     strFunc = `${getHumanName(func.id)}(${func.params.map(p => { return getHumanName(p.caption) }).join(',')})`
                     var returnType = func.exprA ? func.exprA.returnType : func.returnType;
-                    var iconClassName = 'i-32-24 i-field-' + returnType.base;
-                    if (returnType.type)
-                        iconClassName = 'nav-item-icon ' + (returnType.type.icon ? 'ic ic-' + returnType.type.icon : 'i-32-24 ic i-setting-table')
+                    // var iconClassName = 'i-32-24 i-field-' + returnType.base;
+                    // if (returnType.type)
+                    //     iconClassName = 'nav-item-icon ' + (returnType.type.icon ? 'ic ic-' + returnType.type.icon : 'i-32-24 ic i-setting-table')
 
 
-                    found.push(getElement(strFunc, 'globalFunction', returnType.type ? 'Fx -> ' + returnType.type.caption : returnType.base, 'fn', iconClassName, 'red', returnType.type ? returnType.type : null));
+                    found.push(getElement(strFunc, 'globalFunction', returnType.type ? 'Fx -> ' + returnType.type.caption : returnType.base, 'fn', exUtilsNx.getIconClassName(returnType), 'red', returnType.type ? returnType.type : null));
                 }
             });
 
@@ -836,7 +844,7 @@ window.exAutoCompletion = (function () {
             Object.keys(database.schema.types).forEach(t => {
                 var type = database.schema.types[t];
                 if (type.caption.search(RegExp(keywords, 'i')) >= 0)
-                    found.push(getElement(getHumanName(type.caption), 'type', null, null, 'nav-item-icon ' + (type.icon ? 'ic ic-' + type.icon : 'i-32-24 ic i-setting-table'), type.id))
+                    found.push(getElement(getHumanName(type.caption), 'type', null, null, 'nav-item-icon ' + (type.icon ? ('ic ic-' + type.icon) : 'i-32-24 i-field-view'), 'grey', type.id))
 
                 Object.keys(type.fields).forEach(f => {
                     var field = type.fields[f];
@@ -880,7 +888,7 @@ window.exAutoCompletion = (function () {
         return found;
     }
     return {
-        version : exAutoCompletionVersion
+        version: exAutoCompletionVersion
     }
 })();
 
@@ -907,4 +915,5 @@ if (!CodeMirror.oldFromTextArea) {
         return cm;
     }
 }
+
 

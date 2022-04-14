@@ -145,7 +145,7 @@ window.exEvalJS = (function () {
     */
     function exComments(fnt, params, db, cb) {
 
-        database.loadComments(exUtils.getId(params), function (error, commentsArray) {
+        database.loadComments(exUtilsNx.getId(params), function (error, commentsArray) {
             if (error)
                 cb('exComments : ' + error);
             else {

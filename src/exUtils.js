@@ -1,9 +1,9 @@
 exUtilsVersion = '1.01 beta';
 
-window.exUtils = (function () {
-  console.log("exutils.constructor");
+window.exUtilsNx = (function () {
+  console.log("exUtilsNx.constructor");
   return {
-    version : exUtilsVersion,
+    version: exUtilsVersion,
     test: function () {
       return "ok";
     },
@@ -183,9 +183,25 @@ window.exUtils = (function () {
       return this.fireEval(fn, recordId);
     },
 
+    getIconClassName: function (Expr) {
+      var iconClassName = Expr.base ? ('i-32-24 i-field-' + Expr.base) : '';
+      if (Expr.type) {
+        if (Expr.type.icon)
+          iconClassName = 'nav-item-icon ic ic-' + Expr.type.icon;
+        else
+          iconClassName = 'i-32-24 i-field-view';
+      }
+      // NXTreeView_icon nav-item-icon i-32-24 i-white i-setting-table
+      // i-32-24 i-light-grey i-field-view
 
+
+      //class="fn-tools-field-icon i-grey i-32-24 i-field-view"
+      //class="fn-tools-field-icon i-QC nav-item-icon i-32-24 i-field-view"
+      return iconClassName;
+    }
   };
 })();
 
+debugger;
 
 

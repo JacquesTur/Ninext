@@ -62,8 +62,8 @@
     //exModules.loadModule(rootAddress, 'Modules/exUtils.js');
     exModules.log(`exModules version ${exModules.version} loaded`)
 
-    if (!window.exUtils) exModules.loadModule(GitHubAddress, 'src/exUtils.js', false);
-    exModules.log(`exUtils version ${exUtils.version} loaded`);
+    if (!window.exUtilsNx) exModules.loadModule(GitHubAddress, 'src/exUtils.js', false);
+    exModules.log(`exUtils version ${exUtilsNx.version} loaded`);
 
     if (!window.exFinder) exModules.loadModule(GitHubAddress, 'src/exFinder.js', false);
     exModules.log(`exFinder version ${exFinder.version} loaded`);
@@ -74,7 +74,7 @@
       evalJS: true
     };
 
-    exConfigModules = exUtils.extractJSONValueInFieldFn('configLoadModules', 'exLoadModule');
+    exConfigModules = exUtilsNx.extractJSONValueInFieldFn('configLoadModules', 'exLoadModule');
 
     if (exConfigModules.completion) exModules.loadModule(GitHubAddress, 'src/exCompletion.js', false);
     exModules.log(`exAutoCompletion version ${exAutoCompletion.version} loaded`);
@@ -86,14 +86,14 @@
     exModules.log(`exEvalJS version ${exEvalJS.version} loaded`);
 
     if (exModules.myDiv) {
-      exUtils.fireNxFunction('afterLoadModules', 'exLoadModule');
+      exUtilsNx.fireNxFunction('afterLoadModules', 'exLoadModule');
     }
   }
   else {
 
     if (window.exModules) {
       exModules.log(`exModules version ${exModules.version} already loaded`);
-      if (window.exUtils) exModules.log(`exUtils version ${exUtils.version} already loaded`);
+      if (window.exUtilsNx) exModules.log(`exUtils version ${exUtilsNx.version} already loaded`);
       if (window.exFinder) exModules.log(`exFinder version ${exFinder.version} already loaded`);
       if (window.exAutoCompletion) exModules.log(`exAutoCompletion version ${exAutoCompletion.version} already loaded`);
       if (window.exBadges) exModules.log(`exBadges version ${exBadges.version} already loaded`);

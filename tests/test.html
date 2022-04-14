@@ -1,30 +1,195 @@
-<div class='nav-item-icon ic ic-people'>Customer</div>.<div class=''>FormuleA</div> : fn<span
-    style='color:grey; padding-left:10px'>
-    <tr>
-        <div style='color:"blue"'><b>eval("ex</b></dvi>Comments", {
-            id: this.ID
-            })
-</span><br>
-<div class='nav-item-icon ic ic-peoplenav-item-icon ic ic-heartbeat'>exEvalJS</div>.<div class=''>Execute</div> :
-fn<span style='color:grey; padding-left:10px'>
-    <tr>result := "";
-        var configJS := {
-        javascript: text(code),
-        arguments: eval('arguments (exemple : "a":10, "b";"hello"', this.ID)
+<div class='ex-finder-line'><div class='nav-item-icon ic ic-checklist'></div><div class=''>Inscriptions.</div><div class=''>Email d'information auprès du stagiaire : fn</div><div style='color:grey; padding-left:10px'>var Destinataires := Contact.'PrénomNom' + "," + getContactCurrentUser().emailInfo;
+    var Concerne := "Ce message concerne " + Contact.'PrénomNom';
+    Concerne := Concerne + " et son inscription à la formation " + Formations.Nom + " en tant que " + 'Type inscription';
+    var PieceJointes := "";
+    if dialog("Envoi d'un email", "Confirmez vous l'envois à : 
+    " + Destinataires + "
+        
+    de l'email suivant :
+    
+    Vous êtes inscrit à la formation " + Formations.Nom + ".
+    Pour que ....
+        
+        ?", ["Annuler", "Envoyer"]) = "Envoyer" then
+        sendEmail({
+            from: userEmail(),
+            to: Destinataires,
+            cc: userEmail(),
+            subject: "Nouveau commentaire de " + user(),
+            text: Commentaires + "
+            
+    " + PieceJointes,
+            html: ---
+    <a href="{ <span style='color:blue'><b>url</b></span>Of(this) }">
+        <div style="background-color:blue; color:white; height:30px; width:100%; text-align:center; line-height:30px; border-radius:3px;">
+           Voir le commentaire dans son contexte sur Ninox
+        </div></a>
+            <p><i><u>{ Concerne }</u></i><p><p>{ raw(Commentaires) }<p><p><i>{ PieceJointes }</i>
+    ---
+        });
+        alert("L'email a bien été envoyé, vous en recevrez une copie")
+    end</div></div><div class='ex-finder-line'><div class='nav-item-icon ic ic-checklistnav-item-icon ic ic-face2'></div><div class=''>Liste des thérapeutes.</div><div class=''>URL Photo : fn</div><div style='color:grey; padding-left:10px'>html(---
+    <img src='{ 'Image <span style='color:blue'><b>URL</b></span>' }' style="width: 100%;">
+    ---)</div></div><div class='ex-finder-line'><div class='nav-item-icon ic ic-checklistnav-item-icon ic ic-face2nav-item-icon ic ic-face2'></div><div class=''>Liste des thérapeutes.</div><div class=''>Bouton : fn</div><div style='color:grey; padding-left:10px'>'Photo thérapeute' := importFile(this, 'Image <span style='color:blue'><b>URL</b></span>')</div></div><div class='ex-finder-line'><div class='nav-item-icon ic ic-checklistnav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-face2'></div><div class=''>Liste des thérapeutes.</div><div class=''>Mettre à jour toutes les images : fn</div><div style='color:grey; padding-left:10px'>(select 'Liste des thérapeutes').(
+        'Photo thérapeute' := importFile(this, 'Image <span style='color:blue'><b>URL</b></span>');
+        alert("Traitement en cours :" + 'Prénom et NOM')
+    )</div></div><div class='ex-finder-line'><div class='nav-item-icon ic ic-checklistnav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-note'></div><div class=''>Commentaires.</div><div class=''>Envoyer une email de notification : fn</div><div style='color:grey; padding-left:10px'>var Concerne := "Ce message concerne " + Contacts.'PrénomNom';
+    if Inscriptions != null then
+        Concerne := Concerne + " et son inscription à la formation " + Inscriptions.Formations.Nom + " en tant que " + Inscriptions.'Type inscription'
+    end;
+    var PieceJointes := "";
+    if count(files(this)) > 0 then
+        for i in files(this) do
+            if length(PieceJointes) > 0 then
+                PieceJointes := PieceJointes + ", "
+            end;
+            PieceJointes := PieceJointes + last(split(text(files(this)), "/"))
+        end
+    end;
+    if length(PieceJointes) > 0 then
+        PieceJointes := "Piece(s) jointe(s) au commentaire : " + PieceJointes
+    end;
+    if dialog("Envoi d'un email", "Confirmez vous l'envois à : 
+    " + Destinataires + "
+        
+    de l'email suivant :
+    " + Concerne + "
+        
+    " + Commentaires + "
+        
+    " + PieceJointes + "
+        
+        ?", ["Annuler", "Envoyer"]) = "Envoyer" then
+        sendEmail({
+            from: userEmail(),
+            to: Destinataires,
+            cc: userEmail(),
+            subject: "Nouveau commentaire de " + user(),
+            text: Commentaires + "
+            
+    " + PieceJointes,
+            html: ---
+    <a href="{ <span style='color:blue'><b>url</b></span>Of(this) }">
+        <div style="background-color:blue; color:white; height:30px; width:100%; text-align:center; line-height:30px; border-radius:3px;">
+           Voir le commentaire dans son contexte sur Ninox
+        </div></a>
+            <p><i><u>{ Concerne }</u></i><p><p>{ raw(Commentaires) }<p><p><i>{ PieceJointes }</i>
+    ---
+        });
+        alert("L'email a bien été envoyé, vous en recevrez une copie")
+    end</div></div><div class='ex-finder-line'><div class='nav-item-icon ic ic-checklistnav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-notenav-item-icon ic ic-dialog'></div><div class=''>Sujets STF.</div><div class=''>Récapitulatif des échanges : fn</div><div style='color:grey; padding-left:10px'>var s := ---
+    <div onclick='myClick("{ ID }","{ <span style='color:blue'><b>url</b></span>Of(ID) }")' style='cursor:pointer;'>{ 'EntêteHTML' }</div>{ CorpsHTML }{ for i in 'Points de réunion' do }<div onclick='myClick("{ i.ID }","{ i.<span style='color:blue'><b>url</b></span>Of(ID) }")' style='cursor:pointer;'>{ i.EnteteHTML }</div>{ i.CorpsHTML }{ end }
+    
+    <script>
+    function myClick(id, <span style='color:blue'><b>url</b></span>) { "{" }
+    
+    if (window.ui) ui.popupRecord(id);
+        else alert(<span style='color:blue'><b>url</b></span>);
+    }
+    </script>
+    ---;
+    html(s)</div></div><div class='ex-finder-line'><div class='nav-item-icon ic ic-checklistnav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-notenav-item-icon ic ic-dialognav-item-icon ic ic-discussion'></div><div class=''>Réunions.</div><div class=''>Ordre du jour : fn</div><div style='color:grey; padding-left:10px'>var s := ---
+    { 'EntêteHTML' }
+    <hr>{ for i in 'Ordre du jour (points de réunions)' order by 'A été traité lors de la réunion' + (9 - number('Sujets à aborder durant la réunion'.'Priorité')) do var n := number(i.'Sujets à aborder durant la réunion') > 0;
+    }
+    <div onclick='myClick("{ i.ID }","{ i.<span style='color:blue'><b>url</b></span>Of(ID) }")' style='cursor:pointer; background-color:{ if i.'A été traité lors de la réunion' then "lightgray"  else "white"  end };'>{ if n then i.'Sujets à aborder durant la réunion'.'EntêteHTML'  else html("")  end }  { if n and not i.'A été traité lors de la réunion' then i.'Sujets à aborder durant la réunion'.CorpsHTML  else html("")  end }{ i.EnteteHTML }{ i.CorpsHTML }
+    </div>
+    <hr>{ end }
+    
+    <script>
+    function myClick(id, <span style='color:blue'><b>url</b></span>) { "{" }
+    
+    if (window.ui) ui.popupRecord(id);
+        else alert(<span style='color:blue'><b>url</b></span>);
+    return 0;
+    }
+    </script>
+    ---;
+    html(s)</div></div><div class='ex-finder-line'><div class='nav-item-icon ic ic-checklistnav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-notenav-item-icon ic ic-dialognav-item-icon ic ic-discussionnav-item-icon ic ic-discussion'></div><div class=''>Réunions.</div><div class=''>CorpsEmail : fn</div><div style='color:grey; padding-left:10px'>html(---
+    <a href="{ <span style='color:blue'><b>url</b></span>Of(this) }">
+        <div style="background-color:blue; color:white; height:30px; width:100%; text-align:center; line-height:30px; border-radius:3px;">
+           Voir la réuion dans son contexte sur Ninox
+        </div></a><br>{ 'Ordre du jour' }
+    ---)</div></div><div class='ex-finder-line'><div class='nav-item-icon ic ic-checklistnav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-notenav-item-icon ic ic-dialognav-item-icon ic ic-discussionnav-item-icon ic ic-discussionnav-item-icon ic ic-calendar'></div><div class=''>ToDo.</div><div class=''>Contenu d'Email : fn</div><div style='color:grey; padding-left:10px'>html(---
+    <a href="{ <span style='color:blue'><b>url</b></span>Of(this) }">
+        <div style="background-color:blue; color:white; height:30px; width:100%; text-align:center; line-height:30px; border-radius:3px;">
+           Voir la réuion dans son contexte sur Ninox
+        </div></a><br>{ 'Résumé' }
+    ---)</div></div><div class='ex-finder-line'><div class='nav-item-icon ic ic-checklistnav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-face2nav-item-icon ic ic-notenav-item-icon ic ic-dialognav-item-icon ic ic-discussionnav-item-icon ic ic-discussionnav-item-icon ic ic-calendarnav-item-icon i-32-24 ic i-setting-table'></div><div class=''>Initialisation.</div><div class=''>Initialisation des fonctions étendues... : fn</div><div style='color:grey; padding-left:10px'>var nodeId := string(first(select Demarrage).ID);
+    var monId := string(this.ID);
+    var adr := "";
+    if 'Source locales' then
+        adr := "https://exfunctionsninox-eszs.emporter.eu"
+    else
+        adr := "https://raw.githubusercontent.com/JacquesTur/exFunctionsNinox/master"
+    end;
+    var code := http("get", adr + "/index.html");
+    var strInit := if 'Source locales' then
+            "Innitialisation locale
+    "
+        end + code.result + "
+        <script>
+        debugger;
+        if (!window.STFDejaOk) {
+        patt=/\/node\/" + nodeId + "/g;
+        patt.compile(patt);
+        var demPreCharge = patt.test(document.<span style='color:blue'><b>URL</b></span>);
+    
+        patt=/\/node\/" + monId + "/g;
+        patt.compile(patt);
+        var initPreCharge = patt.test(document.<span style='color:blue'><b>URL</b></span>);
+    
+    
+        patt=/\/node\/\w+\d+/g;
+        patt.compile(patt);
+        var autrePreCharge = patt.test(document.<span style='color:blue'><b>URL</b></span>) && !initPreCharge && !demPreCharge;
+    
+        var meFermer = (!autrePreCharge && !demPreCharge && !initPreCharge) || (autrePreCharge ||  ui.getCurrentEditor() && ui.sideEditor.nid &&  ui.sideEditor.nid != '" + string(this.ID) + "' );
+        var ouvrirDem = !autrePreCharge & !demPreCharge;
+    
+        exInit('" + adr + "');
+    
+    /*
+        debugger;
+        var btDashboard = {
+            buttonId: 'Dashboard',
+            title: 'Tableau de bord',
+            color: 'blue',
+            icon: 'heartbeat',
+            onclick: `popupRecord(first(select 'Tableau de bords'));`
         };
-        result := <div style='color:blue'><b>eval("ex</b></dvi>EvalJS", configJS);
-            'command line' := "eval(""exEvalJS"", " + configJS + ");"
-</span><br>
-<div class='nav-item-icon ic ic-peoplenav-item-icon ic ic-heartbeatnav-item-icon i-32-24 ic i-setting-table'>exFinder
-</div>.<div class=''>Formule</div> : fn<span style='color:grey; padding-left:10px'>
-    <tr>var config := {
-        findValue: 'Find value',
-        findType: "text",
-        returnFormat: "HTML"
+        exComponentsJT.exButtonHeader(btDashboard);
+    
+        var btHome = {
+            buttonId: 'Home',
+            title: 'Accueil',
+            color: 'grey',
+            icon: 'home',
+            onclick: `popupRecord(first(select 'Demarrage'));`
         };
-        var lst := <div style='color:"blue"'><b>eval("ex</b></dvi>Find", config);
-            var r := html(lst);
-            debug(debugValueInfo(lst));
-            copyToClipboard(text(lst));
-            html(r)
-</span><br>
+        exComponentsJT.exButtonHeader(btHome);
+    
+    */
+        
+        debugger;
+        //Vérifie si une autre fenêtre popup n'était pas déjà préchargée lors de l'appel à Ninox 
+        if (meFermer)  {
+    
+            ui.closeRecord();
+            if (ouvrirDem) {
+            //Si c'est le cas, alors fermeture de la fenêtre d'initialisation pour laisser apparaitre la fenêtre en dessous
+                debugger;
+                console.log('nodeId:');
+                ui.popupRecord('" + nodeId + "');
+                
+    
+                
+            }
+        }
+        }
+        window.STFDejaOk = true;
+    
+     
+    
+        </script>";
+    html(strInit)</div></div>
