@@ -40,6 +40,9 @@
 // - detection of the type of variable returned by formulas, global functions and variables.
 // - display of possible fields on a formula, a global function or a variable that returns a table is followed by a dot.
 
+// Rev 1.05 du 14 avril 2022
+// bug fix : 
+// - add variable name form loop For : 
 
 
 var exAutoCompletionVersion = '1.05 beta';
