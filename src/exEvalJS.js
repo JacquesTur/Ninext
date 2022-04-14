@@ -12,10 +12,11 @@ window.exEvalJS = (function () {
     var Ctx = new queries.JSRuntimeContext();
 
     //setting up the hook function
-    if (evalFunctor && Ctx /* && !evalFunctor.oldFunction*/) {
+    if (evalFunctor && Ctx /* && !evalFunctor.exOldFunction*/) {
         //save the old eval function, the one with the parameters eval(string,nid)
-        if (evalFunctor.argTypes[0] == 'string') {
-            evalFunctor.oldFunction = Ctx.F[evalFunctor.functorId];
+        //        if (evalFunctor.argTypes[0] == 'string') {
+        if (!evalFunctor.exOldFunction) {
+            evalFunctor.exOldFunction = Ctx.F[evalFunctor.functorId];
         }
 
 
@@ -25,18 +26,15 @@ window.exEvalJS = (function () {
         evalFunctor.sign = 'eval(any,any)';
 
         //creation of the new extended function table
-        evalFunctor.exFunctions = {};
+        evalFunctor.lstExFunctions = {};
 
         //add extended functions to the array
-        evalFunctor.exFunctions['exEvalJS'] = exEvalJS;
-        evalFunctor.exFunctions['exComments'] = exComments;
-        evalFunctor.exFunctions['exFind'] = exFind;
+        evalFunctor.lstExFunctions['exEvalJS'] = exEvalJS;
+        evalFunctor.lstExFunctions['exComments'] = exComments;
+        evalFunctor.lstExFunctions['exFind'] = exFind;
 
 
-        // IMPORTANT: force Ninox to be updated to take into account the extended functions
-        if (!database.adminMode) {
-            window.database.setSchema(window.database.originalSchema);
-        }
+
         /*
             Implementation of the new function eval in the Ninox functions array.
             Now the eval function can be called in two ways.
@@ -57,14 +55,13 @@ window.exEvalJS = (function () {
 
         evalFunctor.hook = function (fnt, params, db, ret) {
             try {
-                debugger;
                 //search if the first parameter of the eval function strictly contains the name of an extended function
-                if (evalFunctor.exFunctions[fnt]) {
+                if (evalFunctor.lstExFunctions[fnt]) {
                     //if this is the case, the corresponding function is called
-                    evalFunctor.exFunctions[fnt](fnt, params, db, ret);
+                    evalFunctor.lstExFunctions[fnt](fnt, params, db, ret);
                 } else {
                     //If not, the Ninox function is called
-                    evalFunctor.oldFunction(fnt, params, db, ret);
+                    evalFunctor.exOldFunction(fnt, params, db, ret);
                 }
             } catch (err) {
                 //in case of an error, the error message is returned through the 'ret' return function
@@ -72,9 +69,13 @@ window.exEvalJS = (function () {
             }
         };
 
-        debugger;
         //recording the hooked function in the NinoxScript function array
         Ctx.F[evalFunctor.functorId] = evalFunctor.hook;
+
+        // IMPORTANT: force Ninox to be updated to take into account the extended functions
+        if (!database.adminMode) {
+            window.database.setSchema(window.database.originalSchema);
+        }
     }
 
 
@@ -187,18 +188,17 @@ window.exEvalJS = (function () {
     result -> [{}]
     */
     function exFind(fnt, params, db, cb) {
-        debugger;
         var r = exFinder.find(params.findValue, params.findType);
-
+        debugger;
         switch (params.returnFormat) {
-            case "JSON": cb(r); break;
-            case "stringify": cb(JSON.stringify(r, null, "\t")); break;
-            case "text": cb(JSON.stringify(r, null, "\t")); break;
+            case 'JSON': cb(r); break;
+            case 'stringify': cb(JSON.stringify(r, null, "\t")); break;
+            case 'HTML' : cb(exFinder.hmltFormat(r, params.findValue)); break;
             default: cb(JSON.stringify(r));
         }
     }
     return {
-        version : exEvalJSVersion,
+        version: exEvalJSVersion,
     }
 })();
 

@@ -1,5 +1,19 @@
 var exFinderVersion = '1.00 beta';
 
+var strStyles = `
+.ex-finder-line {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid lightgray;
+}`; 
+
+var style = document.getElementById('exCoredMirrorStyle');
+if (!style)
+    style = document.createElement('style');
+document.head.appendChild(style);
+style.innerText = strStyles;
+
+
 exFinder = (function () {
     const expsName = ["onClick", "beforeUpdate", "afterUpdate", "visibility", "canWrite", "beforeShow", "afterHide"];
 
@@ -57,7 +71,7 @@ exFinder = (function () {
             }
         }
         catch (err) {
-            console.log("getExpressions error : "+err.message)
+            console.log("getExpressions error : " + err.message)
         }
         return lst;
     }
@@ -82,36 +96,56 @@ exFinder = (function () {
                 });
             });
         }
-        debugger;
         return lstFunctions;
 
     }
 
     function findInList(elements, f, ft) {
-        var lst = []; var re = new RegExp('\\b' + f + '\\b', 'i'); for (var e in elements) {
-            var element = elements[e]; if (element.caption.search(re) != -1) {
+        var lst = [];
+        //        var re = new RegExp('\\b' + f + '\\b', 'i'); 
+        for (var e in elements) {
+            var element = elements[e];
+            //            if (element.caption.search(re) != -1) {
+            if (element.caption.toUpperCase().indexOf(f.toUpperCase()) != -1) {
                 var e = Object.assign(element);
                 delete e.exp; lst.push(element);
             }
-        } return lst;
+        } return lst || [];
     }
 
-    function hmltFormat(lst) {
-        var t = '';
-        var f = '';
-        lst.forEach((e) => {
-            if (e.table != t) {
 
-            }
-        })
-    }
 
     return {
-        version : exFinderVersion,
+        version: exFinderVersion,
         find: function (value, typeOfValue) {
             var lst = getFindElements();
             return findInList(lst, value, typeOfValue);
+        },
+        hmltFormat: function (lst, keyword) {
+            var t = '';
+            var f = '';
+            function bolding(text, key) {
+                var bt = '';
+                var p = -1;
+                while (p = text.toUpperCase().indexOf(key.toUpperCase()), p >= 0) {
+                    bt += `${text.substr(0, p)}<span style='color:blue'><b>${text.substr(p, key.length)}</b></span>`;
+                    text = text.substr(p + key.length);
+                }
+                return bt + text;
+            }
+            var typeClassName = '';
+            var fieldClassName = '';
+            debugger
+            lst.forEach((e) => {
+                if (e.obj) {
+                    if (e.obj.field) fieldClassName += 'i-32-24 i-field-' + e.obj.field.base;
+                    if (e.obj.type)
+                        typeClassName += 'nav-item-icon ' + (e.obj.type.icon ? 'ic ic-' + e.obj.type.icon : 'i-32-24 ic i-setting-table');
 
+                }
+                t += `<div class='ex-finder-line'><div class='${typeClassName}'></div><div class=''>${e.table}.</div><div class='${fieldClassName}'>${e.field} : ${e.name}</div><div style='color:grey; padding-left:10px'>${bolding(e.caption, keyword)}</div></div>`;
+            })
+            return t;
         }
     }
 

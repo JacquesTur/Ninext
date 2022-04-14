@@ -755,7 +755,6 @@ window.exAutoCompletion = (function () {
             if (exp.exprs) exp.exprs.forEach(e => findVariables(e))
 
         }
-        debugger;
         var codeExp = queries.parseHuman(database.schema, database.schema.types[ui.currentView.tid], codeToCursor, null);
         findVariables(codeExp);
 
