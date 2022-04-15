@@ -33,7 +33,7 @@ window.exViewEvent = exFinder = (function () {
                         debugger;
 
                         if (this.field && this.field.fn) {
-                            var fn = exUtilsNx.extractNxFonctionInScript("onclick", this.field.fn);
+                            var fn = exUtilsNx.extractNxFonctionInScript("onselect", this.field.fn);
                             if (fn) {
                                 this.query.nidSelected = nodeId;
                                 this.updateRows();
@@ -48,6 +48,23 @@ window.exViewEvent = exFinder = (function () {
                     if (fireOld) this.exOldSelect(nodeId, t);
                 }
 
+                Object.getPrototypeOf(Do).viewKeyDown = function(e) {
+                    debugger;
+                    switch (e.which) {
+                        case 27:
+                            this.select(-1, null),
+                            e.preventDefault();
+                            break;
+                        case 38:
+                            this.prev(),
+                            e.preventDefault();
+                            break;
+                        case 40:
+                            this.next(),
+                            e.preventDefault()
+                        }
+                }
+
                 clearInterval(myInterval);
                 alert('hook en place');
 
@@ -55,7 +72,11 @@ window.exViewEvent = exFinder = (function () {
                 debugger;
                 cpns && cpns.forEach(element => {
                     $(element.getElementsByClassName("list")[0]).off("click");
-                    $(element.getElementsByClassName("list")[0]).touch($.proxy(Do.click, Do))
+                    $(element.getElementsByClassName("list")[0]).touch($.proxy(Do.click, Do));
+                    $(element.getElementsByClassName("list")[0]).addEventListener("keydown", $.proxy(Do.keydown, Do), !1)
+                    // element.addEventListener( "keydown", viewKeyDown, false);
+                    // this.keydown = $.proxy(this.keydown, this),
+                    // this.$input.addEventListener("keydown", $.proxy(Object.getPrototypeOf(Do).keydown, tObject.getPrototypeOf(Do)), !1)
                 });
             }
         }

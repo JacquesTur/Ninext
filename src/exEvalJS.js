@@ -188,6 +188,7 @@ window.exEvalJS = (function () {
     result -> [{}]
     */
     function exFind(fnt, params, db, cb) {
+        debugger;
         var r = exFinder.find(params.findValue, params.findType);
    
         switch (params.returnFormat) {
@@ -202,5 +203,6 @@ window.exEvalJS = (function () {
     }
 })();
 
+debugger;
 
 
