@@ -651,7 +651,7 @@ window.exAutoCompletion = (function () {
         var token = getToken(line, start, end, /\w/);
 
         var type = null;
-        if (line.charAt(token.start - 1)) {
+        if (line.charAt(token.start - 1) == '.') {
             if (line.charAt(token.start - 2) == `'`)
                 var type = getToken(line, token.start - 3, token.start - 2, /[^']/).keyword;
             else {
@@ -670,7 +670,6 @@ window.exAutoCompletion = (function () {
                     }
                     s--;
                 }
-                else s = -1;
                 if (s >= 0) {
                     if (/^[a-zA-Z]/.test(line.charAt(s))) {
                         var type = getToken(line, s, s, /\w/).keyword;
