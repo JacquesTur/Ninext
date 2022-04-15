@@ -77,13 +77,16 @@
     exConfigModules = exUtilsNx.extractJSONValueInFieldFn('configLoadModules', 'exLoadModule');
 
     if (exConfigModules.completion) exModules.loadModule(GitHubAddress, 'src/exCompletion.js', false);
-    exModules.log(`exAutoCompletion version ${exAutoCompletion.version} loaded`);
+    if (window.exAutoCompletion) exModules.log(`exAutoCompletion version ${exAutoCompletion.version} loaded`);
 
     if (exConfigModules.badges) exModules.loadModule(GitHubAddress, 'src/exBadges.js', false);
-    exModules.log(`exBadges version ${exBadges.version} loaded`);
+    if (window.exBadges) exModules.log(`exBadges version ${exBadges.version} loaded`);
 
     if (exConfigModules.evalJS) exModules.loadModule(GitHubAddress, 'src/exEvalJS.js', false);
-    exModules.log(`exEvalJS version ${exEvalJS.version} loaded`);
+    if (window.exEvalJS) exModules.log(`exEvalJS version ${exEvalJS.version} loaded`);
+
+    if (exConfigModules.viewEvent) exModules.loadModule(GitHubAddress, 'src/exViewEvent.js', false);
+    if (window.exViewEvent) exModules.log(`exViewEvent version ${exViewEvent.version} loaded`);
 
     if (exModules.myDiv) {
       exUtilsNx.fireNxFunction('afterLoadModules', 'exLoadModule');
@@ -98,7 +101,8 @@
       if (window.exAutoCompletion) exModules.log(`exAutoCompletion version ${exAutoCompletion.version} already loaded`);
       if (window.exBadges) exModules.log(`exBadges version ${exBadges.version} already loaded`);
       if (window.exEvalJS) exModules.log(`exEvalJS version ${exEvalJS.version} already loaded`);
-     
+      if (window.exViewEvent) exModules.log(`exViewEvent version ${exViewEvent.version} already loaded`);
+  
     }
 
   }

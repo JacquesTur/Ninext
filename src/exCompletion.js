@@ -42,7 +42,8 @@
 
 // Rev 1.05 du 14 avril 2022
 // bug fix : 
-// - add variable name form loop For : 
+// - add variable name form loop For.
+// - In some cases, auto-completion did not work, especially after a select.
 
 
 var exAutoCompletionVersion = '1.05 beta';
@@ -669,6 +670,7 @@ window.exAutoCompletion = (function () {
                     }
                     s--;
                 }
+                else s = -1;
                 if (s >= 0) {
                     if (/^[a-zA-Z]/.test(line.charAt(s))) {
                         var type = getToken(line, s, s, /\w/).keyword;

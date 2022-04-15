@@ -189,7 +189,7 @@ window.exEvalJS = (function () {
     */
     function exFind(fnt, params, db, cb) {
         var r = exFinder.find(params.findValue, params.findType);
-        debugger;
+   
         switch (params.returnFormat) {
             case 'JSON': cb(r); break;
             case 'stringify': cb(JSON.stringify(r, null, "\t")); break;

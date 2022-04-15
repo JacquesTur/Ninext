@@ -121,18 +121,21 @@ window.exUtilsNx = (function () {
 
     extractNxFonctionInScript: function (fnName, script) {
       // /(function fnName.*(do (?=\().*))/g
+      var r = null;
       var s = script.toString().match("function " + fnName + ".*", "g");
-      s = s.toString().match(/.[^\(|^\)]*/g);
-      var p = 1;
-      var r = "";
-      for (i in s) {
-        if (s[i][0] == "(") p++;
-        if (s[i][0] == ")") {
-          p--;
-          if (p <= 0) s[i] = s[i][0];
+      if (s) {
+        s = s.toString().match(/.[^\(|^\)]*/g);
+        var p = 1;
+        r = "";
+        for (i in s) {
+          if (s[i][0] == "(") p++;
+          if (s[i][0] == ")") {
+            p--;
+            if (p <= 0) s[i] = s[i][0];
+          }
+          if (p <= 0) break;
+          r += s[i];
         }
-        if (p <= 0) break;
-        r += s[i];
       }
       return r;
     },
@@ -196,12 +199,12 @@ window.exUtilsNx = (function () {
 
 
       //class="fn-tools-field-icon i-grey i-32-24 i-field-view"
-      //class="fn-tools-field-icon i-QC nav-item-icon i-32-24 i-field-view"
+      //  class="fn-tools-field-icon i-QC nav-item-icon i-32-24 i-field-view"
       return iconClassName;
     }
   };
 })();
 
-debugger;
+
 
 

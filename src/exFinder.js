@@ -5,7 +5,7 @@ var strStyles = `
     display: flex;
     width: 100%;
     border-bottom: 1px solid lightgray;
-}`; 
+}`;
 
 var style = document.getElementById('exCoredMirrorStyle');
 if (!style)
@@ -99,18 +99,44 @@ exFinder = (function () {
         return lstFunctions;
 
     }
+    function findFieldInExp(exp, tableId, fieldId) {
+        var find = false;
+        if (exp.field) {
+            debugger;
+            find = exp.field.type && exp.field.id == fieldId && exp.field.type.id == tableId;
+        }
+        if (exp.exprA) find |= findFieldInExp(exp.exprA, tableId, fieldId)
+        if (exp.exprB) find |= findFieldInExp(exp.exprB, tableId, fieldId)
+        if (exp.exprs) exp.exprs.forEach(e => {
+            find |= findFieldInExp(e, tableId, fieldId)
+        })
+        if (exp.exps) exp.exps.forEach(e => {
+            find |= findFieldInExp(e, tableId, fieldId)
+        })
+    }
 
     function findInList(elements, f, ft) {
         var lst = [];
         //        var re = new RegExp('\\b' + f + '\\b', 'i'); 
-        for (var e in elements) {
-            var element = elements[e];
+        elements && elements.forEach(element => {
             //            if (element.caption.search(re) != -1) {
-            if (element.caption.toUpperCase().indexOf(f.toUpperCase()) != -1) {
-                var e = Object.assign(element);
-                delete e.exp; lst.push(element);
+            var find = false;
+            switch (ft) {
+                case 'text': find = (element.caption.toUpperCase().indexOf(f.toUpperCase()) >= 0); break;
+                case 'field': {
+                    debugger;
+                    var t = database.schema.findElements(f.tableName);
+                    var f = t.findElements(f.fieldName)
+                    find = findFieldInExp(element.exp, t, f );
+                }
             }
-        } return lst || [];
+            if (find) {
+                var e = Object.assign(element);
+                delete e.exp;
+                lst.push(element);
+            }
+        })
+        return lst || [];
     }
 
 
@@ -135,7 +161,7 @@ exFinder = (function () {
             }
             var typeClassName = '';
             var fieldClassName = '';
-            debugger
+         
             lst.forEach((e) => {
                 if (e.obj) {
                     if (e.obj.field) fieldClassName += 'i-32-24 i-field-' + e.obj.field.base;
