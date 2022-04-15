@@ -66,7 +66,7 @@ window.exViewEvent = exFinder = (function () {
                 }
 
                 clearInterval(myInterval);
-                alert('hook en place');
+                //alert('hook en place');
 
                 var cpns = document.getElementsByClassName("component editor editor-list editor-4col");
                 debugger;
