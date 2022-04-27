@@ -1,4 +1,4 @@
-var exViewEventVersion = '1.01 beta';
+var exViewEventVersion = '1.02 beta';
 
 /* V1.01 beta :
 bug fix : v
@@ -38,7 +38,7 @@ window.exViewEvent = exFinder = (function () {
                             debugger;
 
                             if (this.field && this.field.fn) {
-                                var fn = exUtilsNx.extractNxFonctionInScript("onselect", this.field.fn);
+                                var fn = exUtilsNx.extractNxFonctionInScript("onselect", this.field.fn, this.field);
                                 if (fn) {
                                     this.query.nidSelected = nodeId;
                                     this.updateRows();
@@ -68,6 +68,22 @@ window.exViewEvent = exFinder = (function () {
                                 this.next(),
                                     e.preventDefault()
                         }
+                    }
+
+                    Object.getPrototypeOf(Do).exOldupdateVisibility = Object.getPrototypeOf(Do).updateVisibility;
+                    Object.getPrototypeOf(Do).updateVisibility = function (e) {
+                        debugger;
+                        if (this.field.visibility)
+                        var fn = exUtilsNx.extractNxFonctionInScript("onload", this.field.visibility, this.field);
+                        if (fn) {
+
+                            fn += '; onload()';
+                            var id = exUtilsNx.fireEval(fn, this.query.nid);
+                            this.query.nidSelected = id;
+                            this.updateRows();
+                        }
+
+                        this.exOldupdateVisibility(e);
                     }
 
                     clearInterval(myInterval);

@@ -176,10 +176,3 @@ exFinder = (function () {
     }
 
 })();
-
-
-
-
-debugger;
-
-

@@ -1,5 +1,25 @@
 exUtilsVersion = '1.01 beta';
 
+window.exExpUtils = (function () {
+  return {
+    forEach(exp, fn) {
+      if (!Array.isArray(exp)) {
+        fn(exp);
+        exp.getChildren().forEach(ch => {
+          this.forEach(ch, fn);
+        })
+      }
+      else
+        exp.forEach(e => {
+          e.getChildren().forEach(ch => {
+            this.forEach(ch, fn);
+          })
+        })
+    },
+
+  }
+})();
+
 window.exUtilsNx = (function () {
   console.log("exUtilsNx.constructor");
   return {
@@ -13,6 +33,7 @@ window.exUtilsNx = (function () {
       else if (typeof record === "object") return record._id;
       else return null;
     },
+
 
     fireEval: function (fn, recordId) {
       try {
@@ -31,13 +52,14 @@ window.exUtilsNx = (function () {
           compile = queries.parseHuman(database.schema, type, unescape(fn), {});
         if (compile.hasErrors())
           return "Erreur d'expression : " + compile.errorMessage();
-        var result = database.loadNode(recordId, function (e, i) {
+        var result = null;
+        database.loadNode(recordId, function (e, i) {
           return e
             ? "Failed to load record: " + e
             : i
               ? compile.evaluate(database, i, function (error, t) {
-                if (error) return "Failed to evaluate expression: " + error;
-                return t;
+                if (error) return result = "Failed to evaluate expression: " + error, result;
+                return result = t, result;
               })
               : //? compile.evaluateSync(database, i)
               "Record not found: " + recordId;
@@ -119,32 +141,52 @@ window.exUtilsNx = (function () {
       return component ? component.data("component") : void 0;
     },
 
-    extractNxFonctionInScript: function (fnName, script) {
-      // /(function fnName.*(do (?=\().*))/g
-      var r = null;
-      var s = script.toString().match("function " + fnName + ".*", "g");
-      if (s) {
-        s = s.toString().match(/.[^\(|^\)]*/g);
-        var p = 1;
-        r = "";
-        for (i in s) {
-          if (s[i][0] == "(") p++;
-          if (s[i][0] == ")") {
-            p--;
-            if (p <= 0) s[i] = s[i][0];
-          }
-          if (p <= 0) break;
-          r += s[i];
-        }
-      }
+    extractNxFonctionInScript: function (fnName, script, field) {
+      debugger;
+      var compile = queries.parseSystem(
+        field.schema,
+        field.type,
+        unescape("(" + script + ")"),
+        {}
+      );
+      //            compile.flags ^= 16;
+      //            compile.flags |= 16;
+      if (compile.hasErrors())
+        compile = queries.parseHuman(field.schema, field.type, unescape(script), {});
+      if (compile.hasErrors())
+        return "Erreur d'expression : " + compile.errorMessage();
+
+      var r = "";
+      exExpUtils.forEach(compile, exp => {
+        if (exp.base == "lambda" && exp.id == fnName)
+          r = exp.toHumanString();
+      })
       return r;
+      // var r = null;
+      // var s = script.toString().match("function " + fnName + ".*", "g");
+      // if (s) {
+      //   s = s.toString().match(/.[^\(|^\)]*/g);
+      //   var p = 1;
+      //   r = "";
+      //   for (i in s) {
+      //     if (s[i][0] == "(") p++;
+      //     if (s[i][0] == ")") {
+      //       p--;
+      //       if (p <= 0) s[i] = s[i][0];
+      //     }
+      //     if (p <= 0) break;
+      //     r += s[i];
+      //   }
+      // }
+      // return r;
+
     },
 
     findNxFunctionInField: function (fnName, elementId) {
       var cpn = this.findNxComponentFromElementId(elementId);
       var dataField = this.findNxCompomentData(cpn);
       return dataField.field.fn
-        ? this.extractNxFonctionInScript(fnName, dataField.field.fn)
+        ? this.extractNxFonctionInScript(fnName, dataField.field.fn, dataField.field)
         : void 0;
     },
 
@@ -170,7 +212,7 @@ window.exUtilsNx = (function () {
       var cpn = this.findNxComponentFromElementId(elementId);
       var data = cpn ? this.findNxCompomentData(cpn) : void 0;
       var fnScript = data.field.fn
-        ? this.extractNxFonctionInScript(fnName, data.field.fn)
+        ? this.extractNxFonctionInScript(fnName, data.field.fn, data.field)
         : void 0;
       var recordId = data.container.container.nid ? data.container.container.nid : null;
       var fn = fnScript + ";\n" + fnName + "(";
