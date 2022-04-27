@@ -1,4 +1,8 @@
-var exViewEventVersion = '1.00 beta';
+var exViewEventVersion = '1.01 beta';
+
+/* V1.01 beta :
+bug fix : v
+*/
 
 window.exViewEvent = exFinder = (function () {
     var myInterval = setInterval(() => {
