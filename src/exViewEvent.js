@@ -4,7 +4,8 @@ var exViewEventVersion = '1.02 beta';
 V1.01 beta :
 bug fix : check that the initialization is done on a view field
 
-V1.03
+V1.02
+update : add onload call when visiblity function is fired to update view field;
 */
 
 
