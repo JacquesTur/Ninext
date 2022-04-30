@@ -19,20 +19,55 @@ window.exViewEvent = exFinder = (function () {
                 if (Do && Do.field && Do.field.base == "view" && !Object.getPrototypeOf(Do).exOldClick) {
                     Object.getPrototypeOf(Do).exOldClick = Object.getPrototypeOf(Do).click;
                     Object.getPrototypeOf(Do).click = function (e) {
+                        
+                        var fireOld = true;
+                        if (this.query) {
 
+                            var numCol = null;
+                            var col = document.elementsFromPoint(e.clientX, e.clientY).find(element => element.classList.contains("t-cell"))
+                            if (col) {
+                                numCol = Array.from(col.parentElement.children).indexOf(col);
+                                if (numCol != null) {
 
+                                  
+                                    var o = $(col.parentElement);
+                                    if (o.length) {
+                                        var a = parseInt(o.attr("data-ridx")) + this.ridxTop,
+                                            n = this.query.rows[a];
+                                        if (n) {
+                                            if (this.query.groups[n]) {
+                                                this.query.toggleGroup(n), this.updateHeight(), this.updateRows()
+                                            }
+                                            else {
+                                                if (this.field && this.field.fn) {
+                                                    var fn = exUtilsNx.extractNxFonctionInScript("onclick", this.field.fn, this.field);
+                                                    if (fn) {
+                                                        var params = {
+                                                            oldID: this.query.nidSelected,
+                                                            newID: n,
+                                                            targetLine : a,
+                                                            targetColumn : {num : numCol, value : col.innerText}
+                                                        }
+                                                        debugger;
+                                                        fn += "; onclick(" + JSON.stringify(params) + ")"
+                                                        exUtilsNx.fireEval(fn, this.query.nid);
+                                                        fireOld = false;
+                                                        this.query.nidSelected = n;
+                                                        this.updateRows();
+                                                    }
+                                                }
 
-                        // var fireOld = true;
-                        // if (this.field && this.field.fn) {
-                        //     var fn = exUtilsNx.extractNxFonctionInScript("onclick", fn);
-                        //     if (this.query && fn) {
-                        //         fn += " onclick("+this.queri.
-                        //         exUtilsNx.fireEval(fn, this.query.nid);
-                        //         fireOld = false;
-                        //     }
-                        // }
-                        this.exOldClick(e);
-                        console.log(e);
+                                            }
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (fireOld)
+                            this.exOldClick(e);
+                        console.log("view.onclick:" + e);
 
                     }
 
@@ -59,7 +94,7 @@ window.exViewEvent = exFinder = (function () {
                     }
 
                     Object.getPrototypeOf(Do).viewKeyDown = function (e) {
-                        debugger;
+
                         switch (e.which) {
                             case 27:
                                 this.select(-1, null),
@@ -77,9 +112,9 @@ window.exViewEvent = exFinder = (function () {
 
                     Object.getPrototypeOf(Do).exOldupdateVisibility = Object.getPrototypeOf(Do).updateVisibility;
                     Object.getPrototypeOf(Do).updateVisibility = function (e) {
-                        debugger;
+
                         if (this.field.visibility)
-                        var fn = exUtilsNx.extractNxFonctionInScript("onload", this.field.visibility, this.field);
+                            var fn = exUtilsNx.extractNxFonctionInScript("onload", this.field.visibility, this.field);
                         if (fn) {
 
                             fn += '; onload()';
@@ -93,19 +128,19 @@ window.exViewEvent = exFinder = (function () {
 
                     clearInterval(myInterval);
                     //alert('hook en place');
-/*
-                    var cpns = document.getElementsByClassName("component editor editor-list editor-4col");
-                    debugger;
-                    cpns && cpns.forEach(element => {
-                        $(element.getElementsByClassName("list")[0]).off("click");
-                        $(element.getElementsByClassName("list")[0]).touch($.proxy(Do.click, Do));
-                        $(element.getElementsByClassName("list")[0]).addEventListener("keydown", $.proxy(Do.keydown, Do), !1)
-                        
-                        // element.addEventListener( "keydown", viewKeyDown, false);
-                        // this.keydown = $.proxy(this.keydown, this),
-                        // this.$input.addEventListener("keydown", $.proxy(Object.getPrototypeOf(Do).keydown, tObject.getPrototypeOf(Do)), !1)
-                    });
-                    */
+
+
+                    var lst = cpn.getElementsByClassName("list")[0];
+                    if (lst) {
+                        $(lst).off("click");
+                        $(lst).touch($.proxy(Do.click, Do));
+                        //$(lst).addEventListener("keydown", $.proxy(Do.keydown, Do), !1)
+                    }
+                    // cpn.addEventListener( "keydown", viewKeyDown, false);
+                    // this.keydown = $.proxy(this.keydown, this),
+                    // this.$input.addEventListener("keydown", $.proxy(Object.getPrototypeOf(Do).keydown, tObject.getPrototypeOf(Do)), !1)
+
+
                 }
             });
         }

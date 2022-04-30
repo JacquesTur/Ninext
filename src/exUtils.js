@@ -142,7 +142,6 @@ window.exUtilsNx = (function () {
     },
 
     extractNxFonctionInScript: function (fnName, script, field) {
-      debugger;
       var compile = queries.parseSystem(
         field.schema,
         field.type,
