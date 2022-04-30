@@ -1,4 +1,4 @@
-var exViewEventVersion = '1.02 beta';
+var exViewEventVersion = '1.03 beta';
 
 /* 
 V1.01 beta :
@@ -6,6 +6,9 @@ bug fix : check that the initialization is done on a view field
 
 V1.02
 update : add onload call when visiblity function is fired to update view field;
+
+V1.03
+update : add onclick event with event parameter;
 */
 
 
@@ -43,10 +46,11 @@ window.exViewEvent = exFinder = (function () {
                                                     var fn = exUtilsNx.extractNxFonctionInScript("onclick", this.field.fn, this.field);
                                                     if (fn) {
                                                         var params = {
-                                                            oldID: this.query.nidSelected,
-                                                            newID: n,
-                                                            targetLine : a,
-                                                            targetColumn : {num : numCol, value : col.innerText}
+                                                            previousID: this.query.nidSelected,
+                                                            targetID: n,
+                                                            targetLineNum : a,
+                                                            targetColumnNum : numCol, 
+                                                            targetColumnValue : col.innerText,
                                                         }
                                                         debugger;
                                                         fn += "; onclick(" + JSON.stringify(params) + ")"
