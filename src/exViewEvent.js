@@ -1,4 +1,4 @@
-var exViewEventVersion = '1.03 beta';
+var exViewEventVersion = '1.04 beta';
 
 /* 
 V1.01 beta :
@@ -9,6 +9,9 @@ update : add onload call when visiblity function is fired to update view field;
 
 V1.03
 update : add onclick event with event parameter;
+
+V1.04 : 09/05/2022
+bugfix : let default click run when one group has been clicked
 */
 
 
@@ -39,7 +42,7 @@ window.exViewEvent = exFinder = (function () {
                                             n = this.query.rows[a];
                                         if (n) {
                                             if (this.query.groups[n]) {
-                                                this.query.toggleGroup(n), this.updateHeight(), this.updateRows()
+                                               // let défault click run;
                                             }
                                             else {
                                                 if (this.field && this.field.fn) {
