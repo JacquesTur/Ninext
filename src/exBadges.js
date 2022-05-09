@@ -1,4 +1,10 @@
-var exBadgesVersion = '1.01';
+var exBadgesVersion = '1.02';
+
+//V1.02 du 9 mai 2022
+//bug fixe :
+// minor bug : test if file icon is present before traitement.
+
+
 
 //create global object to manage exBadges.
 if (!window.exBadges) window.exBadges = {version:exBadgesVersion};
@@ -41,7 +47,7 @@ function selectTab(e) {
                 console.log('badges : files refresh')
 
                 // recover the attached files icon on current exBadges.editor
-                var files = this.files.elTab[0];
+                var files = this.files?this.files.elTab[0]:null;
                 if (files) {
                     //recover or create the badge
                     var badge = files.getElementsByTagName('span')[0];
