@@ -1,4 +1,4 @@
-var exViewEventVersion = '1.04 beta';
+var exViewEventVersion = '1.05 beta';
 
 /* 
 V1.01 beta :
