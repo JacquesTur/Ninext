@@ -15,7 +15,7 @@ bugfix : let default click run when one group has been clicked
 
 V1.05 : 12/05/2022
 update : if onclick return true, the default event is fire. In this case, if line is newly selected, the default popup apear 
-update : add targetColumnCaption on event parameter od onclick event
+update : add targetColumnCaption on event parameter of onclick event
 */
 
 
