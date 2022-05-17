@@ -12,6 +12,10 @@ update : add onclick event with event parameter;
 
 V1.04 : 09/05/2022
 bugfix : let default click run when one group has been clicked
+
+V1.05 : 12/05/2022
+update : if onclick return true, the default event is fire. In this case, if line is newly selected, the default popup apear 
+update : add targetColumnCaption on event parameter od onclick event
 */
 
 
@@ -25,7 +29,7 @@ window.exViewEvent = exFinder = (function () {
                 if (Do && Do.field && Do.field.base == "view" && !Object.getPrototypeOf(Do).exOldClick) {
                     Object.getPrototypeOf(Do).exOldClick = Object.getPrototypeOf(Do).click;
                     Object.getPrototypeOf(Do).click = function (e) {
-                        
+
                         var fireOld = true;
                         if (this.query) {
 
@@ -35,14 +39,14 @@ window.exViewEvent = exFinder = (function () {
                                 numCol = Array.from(col.parentElement.children).indexOf(col);
                                 if (numCol != null) {
 
-                                  
+
                                     var o = $(col.parentElement);
                                     if (o.length) {
                                         var a = parseInt(o.attr("data-ridx")) + this.ridxTop,
                                             n = this.query.rows[a];
                                         if (n) {
                                             if (this.query.groups[n]) {
-                                               // let défault click run;
+                                                // let défault click run;
                                             }
                                             else {
                                                 if (this.field && this.field.fn) {
@@ -51,16 +55,20 @@ window.exViewEvent = exFinder = (function () {
                                                         var params = {
                                                             previousID: this.query.nidSelected,
                                                             targetID: n,
-                                                            targetLineNum : a,
-                                                            targetColumnNum : numCol, 
-                                                            targetColumnValue : col.innerText,
+                                                            targetLineNum: a,
+                                                            targetColumnNum: numCol,
+                                                            targetColumnValue: col.innerText,
+                                                            targetColumnCaption: this.query.cols[numCol].caption?this.query.cols[numCol].caption:this.query.cols[numCol].field.caption
                                                         }
                                                         debugger;
                                                         fn += "; onclick(" + JSON.stringify(params) + ")"
-                                                        exUtilsNx.fireEval(fn, this.query.nid);
-                                                        fireOld = false;
-                                                        this.query.nidSelected = n;
-                                                        this.updateRows();
+
+                                                        fireOld = exUtilsNx.fireEval(fn, this.query.nid);
+                                                        console.log('fireOld', fireOld);
+                                                        if (!fireOld) {
+                                                            this.query.nidSelected = n;
+                                                            this.updateRows();
+                                                        }
                                                     }
                                                 }
 
@@ -72,9 +80,11 @@ window.exViewEvent = exFinder = (function () {
                             }
                         }
 
-                        if (fireOld)
+                        if (fireOld) {
+                            console.log('default click');
                             this.exOldClick(e);
-                        console.log("view.onclick:" + e);
+                        }
+                        console.log("view.onclick:", e);
 
                     }
 
@@ -97,7 +107,11 @@ window.exViewEvent = exFinder = (function () {
                                 }
                             }
                         }
-                        if (fireOld) this.exOldSelect(nodeId, t);
+                        if (fireOld) {
+                            console.log('default select');
+                            this.exOldSelect(nodeId, t);
+
+                        }
                     }
 
                     Object.getPrototypeOf(Do).viewKeyDown = function (e) {
