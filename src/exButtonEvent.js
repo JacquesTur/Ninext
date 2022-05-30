@@ -30,6 +30,7 @@ window.exButtonEvent = (function () {
                 if (Bu && Bu.field && Bu.field.base == "button" && !Object.getPrototypeOf(Bu).exOldClick) {
 
                     console.log('init ButtonEvent', Bu);
+                    debugger;
                     Object.getPrototypeOf(Bu).exOldButtonUpdateVisibility = Object.getPrototypeOf(Bu).updateVisibility;
                     Object.getPrototypeOf(Bu).updateVisibility = function (e) {
                         this.exOldButtonUpdateVisibility(e);
