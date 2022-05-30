@@ -1,4 +1,4 @@
-var exButtonEventVersion = '1.00c beta';
+var exButtonEventVersion = '1.00d beta';
 
 
 exButtonBadges = {
@@ -29,9 +29,10 @@ window.exButtonEvent = (function () {
 
                 if (Bu && Bu.field && Bu.field.base == "button" && !Object.getPrototypeOf(Bu).exOldClick) {
 
+               
                     Object.getPrototypeOf(Bu).exOldupdateVisibility = Object.getPrototypeOf(Bu).updateVisibility;
                     Object.getPrototypeOf(Bu).updateVisibility = function (e) {
-                       // this.exOldupdateVisibility(e);
+                        this.exOldupdateVisibility(e);
 
                         if (this.field.visibility) {
                             var fn = exUtilsNx.extractNxFonctionInScript("onUpdate", this.field.visibility, this.field);
@@ -39,7 +40,7 @@ window.exButtonEvent = (function () {
                                 fn += `; onUpdate({ caption: "${this.field.caption}", buttonColor : "${this.field.buttonColor}"})`;
                                 var buttonValues = exUtilsNx.fireEval(fn, this.container.container.nid);
                                 const colors = ['blue', 'red', 'grey']
-                                debugger;
+                               
                                 console.log('bouton', buttonValues);
                                 if (buttonValues && buttonValues.caption)
                                     this.button.text(buttonValues.caption);
@@ -73,6 +74,9 @@ window.exButtonEvent = (function () {
 
                     clearInterval(myInterval);
                     //alert('hook en place');
+
+                    debugger;
+                    Bu.updateVisibility();
                 }
             });
         }
