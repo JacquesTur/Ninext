@@ -1,4 +1,4 @@
-var exButtonEventVersion = '1.00b beta';
+var exButtonEventVersion = '1.00c beta';
 
 
 exButtonBadges = {
