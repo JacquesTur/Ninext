@@ -33,7 +33,8 @@ window.exButtonEvent = (function () {
                     debugger;
                     Object.getPrototypeOf(Bu).exOldButtonUpdateVisibility = Object.getPrototypeOf(Bu).updateVisibility;
                     Object.getPrototypeOf(Bu).updateVisibility = function (e) {
-                        this.exOldButtonUpdateVisibility(e);
+                        if (!e || e != true)
+                            this.exOldButtonUpdateVisibility(e);
 
                         if (this.field.visibility) {
                             var fn = exUtilsNx.extractNxFonctionInScript("onUpdate", this.field.visibility, this.field);
@@ -41,7 +42,7 @@ window.exButtonEvent = (function () {
                                 fn += `; onUpdate({ caption: "${this.field.caption}", buttonColor : "${this.field.buttonColor}"})`;
                                 var buttonValues = exUtilsNx.fireEval(fn, this.container.container.nid);
                                 const colors = ['blue', 'red', 'grey']
-                               
+
                                 console.log('bouton', buttonValues);
                                 if (buttonValues && buttonValues.caption)
                                     this.button.text(buttonValues.caption);
@@ -77,7 +78,7 @@ window.exButtonEvent = (function () {
                     //alert('hook en place');
 
                     debugger;
-                    Bu.updateVisibility();
+                    Bu.updateVisibility(true);
                 }
             });
         }
