@@ -1,6 +1,6 @@
 var exButtonEventVersion = '1.00b beta';
 
-
+debugger;
 window.exButtonEvent = (function () {
     var myInterval = setInterval(() => {
         var button = document.getElementsByClassName("component editor button");
@@ -25,11 +25,11 @@ window.exButtonEvent = (function () {
                                 if (buttonValues && buttonValues.caption)
                                     this.button.text(buttonValues.caption);
 
-                                if (buttonValues && buttonValues.buttonColor && colors.includes(buttonValues.color)) {
+                                if (buttonValues && buttonValues.buttonColor && colors.includes(buttonValues.buttonColor)) {
                                     colors.forEach(c => this.button.removeClass(c));
                                     this.button.addClass(buttonValues.buttonColor);
                                 }
-                                if (buttonValues && buttonValues.buttonColor)
+                                if (buttonValues && buttonValues.title)
                                     this.el[0].title = buttonValues.title;
 
                             }
