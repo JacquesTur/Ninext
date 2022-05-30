@@ -27,14 +27,14 @@ window.exButtonEvent = (function () {
             button.forEach(cpn => {
                 var Bu = $(cpn).data().component;
 
-                if (Bu && Bu.field && Bu.field.base == "button" && !Object.getPrototypeOf(Bu).exOldClick) {
+                if (Bu && Bu.field && Bu.field.base == "button" && !Object.getPrototypeOf(Bu).exOldButtonUpdateVisibility) {
 
                     console.log('init ButtonEvent', Bu);
                     debugger;
                     Object.getPrototypeOf(Bu).exOldButtonUpdateVisibility = Object.getPrototypeOf(Bu).updateVisibility;
                     Object.getPrototypeOf(Bu).updateVisibility = function (e) {
-                        if (!e || e != true)
-                            this.exOldButtonUpdateVisibility(e);
+
+                        this.exOldButtonUpdateVisibility(e);
 
                         if (this.field.visibility) {
                             var fn = exUtilsNx.extractNxFonctionInScript("onUpdate", this.field.visibility, this.field);
@@ -78,7 +78,7 @@ window.exButtonEvent = (function () {
                     //alert('hook en place');
 
                     debugger;
-                    Bu.updateVisibility(true);
+                    Bu.updateVisibility();
                 }
             });
         }
