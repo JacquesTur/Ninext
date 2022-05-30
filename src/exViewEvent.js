@@ -1,4 +1,4 @@
-var exViewEventVersion = '1.05 beta';
+var exButtonEventVersion = '1.05 beta';
 
 /* 
 V1.01 beta :
@@ -19,7 +19,7 @@ update : add targetColumnCaption on event parameter of onclick event
 */
 
 
-window.exViewEvent = exFinder = (function () {
+window.exViewEvent = (function () {
     var myInterval = setInterval(() => {
         var view = document.getElementsByClassName("component editor editor-list editor-4col")[0];
         if (view) {
@@ -167,6 +167,6 @@ window.exViewEvent = exFinder = (function () {
         }
     }, 1000);
     return {
-        version: exViewEventVersion,
+        version: exButtonEventVersion,
     }
 })()

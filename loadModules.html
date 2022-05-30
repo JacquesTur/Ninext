@@ -88,6 +88,9 @@
     if (exConfigModules.viewEvent) exModules.loadModule(GitHubAddress, 'src/exViewEvent.js', false);
     if (window.exViewEvent) exModules.log(`exViewEvent version ${exViewEvent.version} loaded`);
 
+    if (exConfigModules.buttonEvent) exModules.loadModule(GitHubAddress, 'src/exButtonEvent.js', false);
+    if (window.exButtonEvent) exModules.log(`exButtonEvent version ${exButtonEvent.version} loaded`);
+
     if (exModules.myDiv) {
       exUtilsNx.fireNxFunction('afterLoadModules', 'exLoadModule');
     }
@@ -102,6 +105,7 @@
       if (window.exBadges) exModules.log(`exBadges version ${exBadges.version} already loaded`);
       if (window.exEvalJS) exModules.log(`exEvalJS version ${exEvalJS.version} already loaded`);
       if (window.exViewEvent) exModules.log(`exViewEvent version ${exViewEvent.version} already loaded`);
+      if (window.exButtonEvent) exModules.log(`exButtonEvent version ${exButtonEvent.version} already loaded`);
   
     }
 
