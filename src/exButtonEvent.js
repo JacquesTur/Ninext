@@ -31,7 +31,7 @@ window.exButtonEvent = (function () {
 
                     Object.getPrototypeOf(Bu).exOldupdateVisibility = Object.getPrototypeOf(Bu).updateVisibility;
                     Object.getPrototypeOf(Bu).updateVisibility = function (e) {
-                        this.exOldupdateVisibility(e);
+                       // this.exOldupdateVisibility(e);
 
                         if (this.field.visibility) {
                             var fn = exUtilsNx.extractNxFonctionInScript("onUpdate", this.field.visibility, this.field);
