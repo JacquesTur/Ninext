@@ -1,6 +1,25 @@
 var exButtonEventVersion = '1.00b beta';
 
-debugger;
+
+exButtonBadges = {
+    position: 'absolute',
+    display: 'flex',
+    top: '0px',
+    right: '0px',
+    'background-color': 'red',
+    height: '15px',
+    'line-height': '15px',
+    width: 'auto',
+    'min-width': '11px',
+    'padding-left': '2px',
+    'padding-right': '2px',
+    'text-align': 'center',
+    'border-radius': '8px',
+    color: 'white',
+    'justify-content': 'center',
+    'font-size': 'smaller'
+};
+
 window.exButtonEvent = (function () {
     var myInterval = setInterval(() => {
         var button = document.getElementsByClassName("component editor button");
@@ -32,6 +51,22 @@ window.exButtonEvent = (function () {
                                 if (buttonValues && buttonValues.title)
                                     this.el[0].title = buttonValues.title;
 
+                                var badge = this.button.find('span')[0];
+                                if (buttonValues && buttonValues.badge) {
+
+                                    if (!badge) {
+                                        badge = $(document.createElement("span"));
+                                        this.button.append(badge);
+                                    }
+
+                                    //set the badge
+                                    badge.css(exButtonBadges);
+                                    badge.text(buttonValues.badge.caption ? buttonValues.badge.caption : "")
+                                    badge.css("visibility", (buttonValues.badge.caption && buttonValues.badge.caption.length > 0) ? 'visible' : 'hidden');
+                                    badge.css("backgroundColor", buttonValues.badge.color ? buttonValues.badge.color : "red");
+                                }
+                                else
+                                    if (badge) badge.css('visibility', false)
                             }
                         }
                     }
