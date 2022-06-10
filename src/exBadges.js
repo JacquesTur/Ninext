@@ -6,7 +6,7 @@ var exBadgesVersion = '1.03';
 
 //V1.03 du 9 juin 2022
 //bug fixe :
-// correct gestion of comment on Mac App. 
+// correct gestion of comments on Mac App : call it if database.loadComments function exist not if schemas.envConfig.userEnvName != 'mac'. 
 
 
 //create global object to manage exBadges.
@@ -88,8 +88,7 @@ function selectTab(e) {
                 };
             });
 
-            // load the comment only for the web application.On the Mac application, comments do not exist
-            //            if (schemas.envConfig.userEnvName != 'mac') {
+            // load the comment only for the cloud database when loadComments function exist.
             if (database.loadComments) {
                 console.log('badges : comments load')
 
