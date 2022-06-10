@@ -1,9 +1,12 @@
-var exBadgesVersion = '1.02';
+var exBadgesVersion = '1.03';
 
 //V1.02 du 9 mai 2022
 //bug fixe :
 // minor bug : test if file icon is present before traitement.
 
+//V1.03 du 9 juin 2022
+//bug fixe :
+// correct gestion of comment on Mac App. 
 
 
 //create global object to manage exBadges.
