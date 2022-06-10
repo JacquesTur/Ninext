@@ -7,7 +7,7 @@ var exBadgesVersion = '1.02';
 
 
 //create global object to manage exBadges.
-if (!window.exBadges) window.exBadges = {version:exBadgesVersion};
+if (!window.exBadges) window.exBadges = { version: exBadgesVersion };
 
 //style base of badges
 exBadges.style = `
@@ -47,7 +47,7 @@ function selectTab(e) {
                 console.log('badges : files refresh')
 
                 // recover the attached files icon on current exBadges.editor
-                var files = this.files?this.files.elTab[0]:null;
+                var files = this.files ? this.files.elTab[0] : null;
                 if (files) {
                     //recover or create the badge
                     var badge = files.getElementsByTagName('span')[0];
@@ -86,7 +86,8 @@ function selectTab(e) {
             });
 
             // load the comment only for the web application.On the Mac application, comments do not exist
-            if (schemas.envConfig.userEnvName != 'mac') {
+            //            if (schemas.envConfig.userEnvName != 'mac') {
+            if (database.loadComments) {
                 console.log('badges : comments load')
 
                 //load files of current record (is async function)

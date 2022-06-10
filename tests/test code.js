@@ -23,3 +23,4 @@ alert(---
     old ID : { event.oldID }, new ID : { event.newID }, line : { event.targetLine } col : { event.targetColumn }
 ---)
 end onclick({ "oldID": "N3", "newID": "A4", "targetLine": 0, "targetColumn": {} })
+
